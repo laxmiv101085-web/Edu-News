@@ -1,0 +1,2 @@
+"""EduNews Backend Application"""
+

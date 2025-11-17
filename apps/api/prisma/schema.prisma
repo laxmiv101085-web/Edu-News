@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SourceType {
+  RSS
+  API
+  HTML
+}
+
+enum ItemType {
+  EXAM
+  SCHOLARSHIP
+  RESULT
+  ADMISSION
+  OTHER
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  passwordHash String @map("password_hash")
+  locale    String?  @default("en")
+  isAdmin   Boolean  @default(false) @map("is_admin")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  devices       UserDevice[]
+  alertRules    AlertRule[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model UserDevice {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  fcmToken  String   @map("fcm_token")
+  platform  String   // 'web', 'android', 'ios'
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, fcmToken])
+  @@map("user_devices")
+}
+
+model AlertRule {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  name          String
+  keywordsJson  Json     @map("keywords_json") // string[]
+  examNamesJson Json     @map("exam_names_json") // string[]
+  typesJson     Json     @map("types_json") // ItemType[]
+  locationsJson Json     @map("locations_json") // string[]
+  minTrustLevel Int      @default(5) @map("min_trust_level")
+  frequency     String   @default("immediate") // 'immediate', 'daily', 'weekly'
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+
+  @@map("alert_rules")
+}
+
+model Source {
+  id               String     @id @default(cuid())
+  name             String
+  url              String
+  sourceType       SourceType @map("source_type")
+  trustLevel       Int        @default(5) @map("trust_level")
+  pollIntervalMinutes Int     @default(60) @map("poll_interval_minutes")
+  lastFetch        DateTime?  @map("last_fetch")
+  active           Boolean    @default(true)
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  rawItems RawItem[]
+  items    Item[]
+
+  @@map("sources")
+}
+
+model RawItem {
+  id        String   @id @default(cuid())
+  sourceId  String   @map("source_id")
+  rawJson   Json     @map("raw_json")
+  fetchedAt DateTime @default(now()) @map("fetched_at")
+
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@map("raw_items")
+}
+
+model Item {
+  id               String   @id @default(cuid())
+  title            String
+  body             String   @db.Text
+  publishedAt      DateTime @map("published_at")
+  url              String
+  sourceId         String   @map("source_id")
+  type             ItemType
+  tags             Json     // string[]
+  shortSummary     String?  @map("short_summary") @db.Text
+  longSummary      String?  @map("long_summary") @db.Text
+  dedupeHash       String   @unique @map("dedupe_hash")
+  extractedEntities Json?   @map("extracted_entities") // { examName, institution, dates, etc }
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  source        Source         @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+
+  @@index([type])
+  @@index([publishedAt])
+  @@index([dedupeHash])
+  @@map("items")
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String           @map("user_id")
+  itemId     String           @map("item_id")
+  alertRuleId String?         @map("alert_rule_id")
+  sentVia    Json             @map("sent_via") // string[] - channels used
+  status     NotificationStatus @default(PENDING)
+  createdAt  DateTime         @default(now()) @map("created_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item      Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  alertRule AlertRule? @relation(fields: [alertRuleId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@index([itemId])
+  @@map("notifications")
+}
+
