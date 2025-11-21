@@ -13,19 +13,20 @@ const prisma = new PrismaClient();
 console.log('🚀 Starting worker...');
 
 // Create workers for each queue
+// Lower concurrency for free tier (512MB RAM limit)
 const ingestionWorker = new Worker('ingestion', IngestionProcessor(prisma, redis), {
   connection: redis,
-  concurrency: 5,
+  concurrency: 2, // Reduced from 5
 });
 
 const processingWorker = new Worker('processing', ProcessingProcessor(prisma, redis), {
   connection: redis,
-  concurrency: 10,
+  concurrency: 2, // Reduced from 10
 });
 
 const notificationsWorker = new Worker('notifications', NotificationProcessor(prisma, redis), {
   connection: redis,
-  concurrency: 20,
+  concurrency: 5, // Reduced from 20
 });
 
 // Start cron scheduler for periodic ingestion
@@ -67,6 +68,18 @@ process.on('SIGTERM', async () => {
   await prisma.$disconnect();
   await redis.quit();
   process.exit(0);
+});
+
+// Add a simple HTTP server for Render health checks
+import * as http from 'http';
+const PORT = process.env.PORT || 3000;
+const server = http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('Worker is running');
+});
+
+server.listen(PORT, () => {
+  console.log(`✅ Worker HTTP server listening on port ${PORT}`);
 });
 
 console.log('✅ Workers started successfully');

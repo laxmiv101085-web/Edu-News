@@ -24,12 +24,4 @@ migrate:
 seed:
 	cd apps/api && npm run seed
 
-docker-up:
-	docker-compose -f infra/docker-compose.yml up -d
-
-docker-down:
-	docker-compose -f infra/docker-compose.yml down
-
-docker-logs:
-	docker-compose -f infra/docker-compose.yml logs -f
 

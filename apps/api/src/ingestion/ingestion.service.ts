@@ -56,7 +56,7 @@ export class IngestionService {
       // Store raw items and queue for processing
       for (const item of items) {
         const dedupeHash = this.computeDedupeHash(item);
-        
+
         // Check for duplicates (within last 30 days)
         const existing = await this.prisma.item.findFirst({
           where: {
@@ -116,10 +116,10 @@ export class IngestionService {
     try {
       const response = await axios.get(url);
       const data = response.data;
-      
+
       // Assume API returns array of items or { items: [...] }
       const items = Array.isArray(data) ? data : (data.items || []);
-      
+
       return items.map((item: any) => ({
         title: item.title || item.headline || 'Untitled',
         body: item.body || item.description || item.content || '',
@@ -138,11 +138,11 @@ export class IngestionService {
       // Check robots.txt
       const robotsUrl = new URL('/robots.txt', url).toString();
       let robots: any = null;
-      
+
       try {
         const robotsResponse = await axios.get(robotsUrl);
         robots = robotsParser(robotsUrl, robotsResponse.data);
-        
+
         if (robots && !robots.isAllowed(url, 'EducationalNewsBot')) {
           console.warn(`URL ${url} is disallowed by robots.txt`);
           return [];
@@ -152,25 +152,32 @@ export class IngestionService {
         console.warn('Could not fetch robots.txt, proceeding...');
       }
 
+      // Add random delay to be polite and avoid rate limits (1-3 seconds)
+      const delay = Math.floor(Math.random() * 2000) + 1000;
+      await new Promise(resolve => setTimeout(resolve, delay));
+
       const response = await axios.get(url, {
         headers: {
-          'User-Agent': 'EducationalNewsBot/1.0',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
         },
+        timeout: 10000, // 10s timeout
       });
 
       const $ = cheerio.load(response.data);
-      
+
       // Try to find article/notice elements
       const articles: RawItemData[] = [];
-      
+
       // Common selectors for educational notices
       $('article, .notice, .notification, .announcement, .post').each((_, el) => {
         const title = $(el).find('h1, h2, h3, .title, .heading').first().text().trim();
         const body = $(el).find('.content, .body, .description, p').text().trim();
         const link = $(el).find('a').first().attr('href') || url;
-        const dateText = $(el).find('.date, .published, time').first().attr('datetime') || 
-                        $(el).find('.date, .published, time').first().text();
-        
+        const dateText = $(el).find('.date, .published, time').first().attr('datetime') ||
+          $(el).find('.date, .published, time').first().text();
+
         if (title && body) {
           articles.push({
             title,
@@ -186,7 +193,7 @@ export class IngestionService {
       if (articles.length === 0) {
         const title = $('title').text() || $('h1').first().text() || 'Untitled';
         const body = $('body').text().replace(/\s+/g, ' ').trim();
-        
+
         if (body) {
           articles.push({
             title,
@@ -211,7 +218,7 @@ export class IngestionService {
       body: item.body.toLowerCase().trim().substring(0, 500),
       url: item.url,
     };
-    
+
     const hashInput = `${normalized.title}|${normalized.body}|${normalized.url}`;
     return crypto.createHash('sha256').update(hashInput).digest('hex');
   }
