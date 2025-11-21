@@ -1,0 +1,23 @@
+export interface Article {
+    id: string;
+    source: {
+        id: string;
+        name: string;
+        url?: string;
+    };
+    title: string;
+    summary: string;
+    content?: string;
+    url: string;
+    publishedAt: string; // ISO string
+    category: 'scholarships' | 'exams' | 'results' | 'admissions' | 'policy' | 'general';
+    tags: string[];
+    image?: string;
+    language: string;
+    authorityScore?: number;
+}
+
+export interface NewsProvider {
+    name: string;
+    fetchArticles: () => Promise<Article[]>;
+}

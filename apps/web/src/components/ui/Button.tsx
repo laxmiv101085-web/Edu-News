@@ -1,62 +1,57 @@
-import { forwardRef } from "react";
-import { Slot } from "@radix-ui/react-slot";
-import cn from "@/lib/utils/cn";
+import React from 'react';
+import clsx from 'clsx';
+import { Loader2 } from 'lucide-react';
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "outline";
-
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
-  asChild?: boolean;
+  icon?: React.ReactNode;
 }
 
-const baseClasses =
-  "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60";
+const Button = ({
+  children,
+  className,
+  variant = 'primary',
+  size = 'md',
+  isLoading = false,
+  icon,
+  ...props
+}: ButtonProps) => {
+  const baseStyles = 'inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg-dark disabled:opacity-50 disabled:cursor-not-allowed';
 
-const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-primary-600 text-white shadow-soft hover:bg-primary-700",
-  secondary: "bg-neutral-100 text-text-primary hover:bg-neutral-200 dark:bg-white/10",
-  ghost: "text-text-muted hover:text-text-primary hover:bg-neutral-100/60 dark:hover:bg-white/5",
-  outline: "border border-border text-text-primary hover:border-primary-200",
+  const variants = {
+    primary: 'bg-accent-yellow text-bg-dark hover:bg-[#e2ff5c] focus:ring-accent-yellow shadow-[0_0_20px_rgba(214,255,42,0.3)] hover:shadow-[0_0_30px_rgba(214,255,42,0.5)]',
+    secondary: 'bg-white/10 text-white hover:bg-white/20 focus:ring-white/50 backdrop-blur-sm',
+    outline: 'border border-white/20 text-white hover:bg-white/5 focus:ring-white/50',
+    ghost: 'text-neutral-400 hover:text-white hover:bg-white/5',
+  };
+
+  const sizes = {
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-6 py-3 text-base',
+    lg: 'px-8 py-4 text-lg',
+  };
+
+  return (
+    <button
+      className={clsx(
+        baseStyles,
+        variants[variant],
+        sizes[size],
+        className
+      )}
+      disabled={isLoading || props.disabled}
+      {...props}
+    >
+      {isLoading ? (
+        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+      ) : icon ? (
+        <span className="mr-2">{icon}</span>
+      ) : null}
+      {children}
+    </button>
+  );
 };
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, children, variant = "primary", isLoading, disabled, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    const mergedProps = {
-      ...(asChild ? {} : { disabled: disabled || isLoading }),
-      ...props,
-    };
-    
-    // When asChild is true, Slot requires exactly one child
-    if (asChild) {
-      return (
-        <Comp
-          ref={ref}
-          className={cn(baseClasses, variantClasses[variant], className)}
-          {...mergedProps}
-        >
-          {children}
-        </Comp>
-      );
-    }
-    
-    return (
-      <Comp
-        ref={ref}
-        className={cn(baseClasses, variantClasses[variant], className)}
-        {...mergedProps}
-      >
-        {isLoading && (
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden />
-        )}
-        {children}
-      </Comp>
-    );
-  }
-);
-
-Button.displayName = "Button";
-
 export default Button;
-

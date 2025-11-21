@@ -1,0 +1,38 @@
+export const articles = [
+    {
+        id: 1,
+        title: "The Future of AI in Software Development",
+        excerpt: "How artificial intelligence is reshaping the way we write, debug, and deploy code.",
+        category: "Technology",
+        date: "Oct 12, 2023",
+        readTime: "5 min read",
+        image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=1200&h=800",
+    },
+    {
+        id: 2,
+        title: "Mastering React Server Components",
+        excerpt: "A deep dive into the architecture and benefits of React Server Components for modern web apps.",
+        category: "Development",
+        date: "Oct 10, 2023",
+        readTime: "8 min read",
+        image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1200&h=800",
+    },
+    {
+        id: 3,
+        title: "Optimizing Next.js Performance",
+        excerpt: "Tips and tricks to make your Next.js applications faster and more efficient.",
+        category: "Performance",
+        date: "Oct 08, 2023",
+        readTime: "6 min read",
+        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1200&h=800",
+    },
+    {
+        id: 4,
+        title: "Understanding TypeScript Generics",
+        excerpt: "A comprehensive guide to using generics in TypeScript to write reusable and type-safe code.",
+        category: "TypeScript",
+        date: "Oct 05, 2023",
+        readTime: "7 min read",
+        image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&q=80&w=1200&h=800",
+    },
+];

@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // import { QueryClient, QueryClientProvider } from "react-query";
 import { ToastProvider } from "@/components/feedback/ToastProvider";
 import { ThemeProvider } from "@/hooks/useTheme";
+import { AuthProvider } from '../contexts/AuthContext';
 
 const queryClient = new QueryClient();
 
