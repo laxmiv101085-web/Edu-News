@@ -1,54 +1,72 @@
+const tokens = require("./design/tokens");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}"
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
-        brand: {
-          50:  "#f5fbff",
-          100: "#e6f7ff",
-          200: "#bfeaff",
-          300: "#99ddff",
-          400: "#66c7ff",
-          500: "#3392ff",
-          600: "#0a6eed",
-          700: "#0456c2",
-          800: "#034296",
-          900: "#012b63",
-        },
-        accent: {
-          50:  "#fff8fb",
-          100: "#ffeff6",
-          300: "#ffb3ea",
-          500: "#ff6fd1",
-          700: "#da2b9a",
-        },
+        primary: tokens.colors.primary,
+        neutral: tokens.colors.neutral,
+        accent: tokens.colors.accent,
+        bg: tokens.colors.semantic.bg,
+        surface: tokens.colors.semantic.surface,
+        border: tokens.colors.semantic.border,
+        "text-primary": tokens.colors.semantic.textPrimary,
+        "text-muted": tokens.colors.semantic.textMuted,
+        success: tokens.colors.semantic.success,
+        warning: tokens.colors.semantic.warning,
+        danger: tokens.colors.semantic.danger,
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-jakarta)", "Plus Jakarta Sans", "system-ui"],
+      },
+      spacing: tokens.spacing,
+      borderRadius: {
+        none: "0px",
+        DEFAULT: tokens.radius.md,
+        md: tokens.radius.md,
+        lg: tokens.radius.lg,
+        xl: tokens.radius.xl,
+        "2xl": tokens.radius["2xl"],
+        "3xl": tokens.radius["3xl"],
+        sm: tokens.radius.sm,
+        full: tokens.radius.round,
       },
       boxShadow: {
-        soft: "0 6px 24px rgba(12, 19, 50, 0.08)",
-        glow: "0 8px 30px rgba(51,146,255,0.12)",
-      },
-      borderRadius: {
-        xl: "1rem",
-        "2xl": "1.5rem",
+        soft: tokens.elevation.soft,
+        medium: tokens.elevation.medium,
+        deep: tokens.elevation.deep,
       },
       keyframes: {
-        float: {
+        "card-float": {
           "0%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-6px)" },
           "100%": { transform: "translateY(0px)" },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "slide-fade": {
+          "0%": { opacity: 0, transform: "translateY(12px)" },
+          "100%": { opacity: 1, transform: "translateY(0)" },
+        },
+        blob: {
+          "0%": { transform: "translate(0px, 0px) scale(1)" },
+          "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+          "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+          "100%": { transform: "translate(0px, 0px) scale(1)" },
+        },
       },
       animation: {
-        float: "float 6s ease-in-out infinite",
-        "fade-in-up": "fadeInUp .6s ease both",
+        float: "card-float 6s ease-in-out infinite",
+        shimmer: "shimmer 1.5s linear infinite",
+        "slide-fade": "slide-fade 0.4s ease forwards",
+        blob: "blob 7s infinite",
       },
     },
   },
   plugins: [],
 };
-
