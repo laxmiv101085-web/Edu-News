@@ -42,3 +42,5 @@ export const MobileActionBar = ({ categories }: MobileActionBarProps) => {
 export default MobileActionBar;
 
 
+
+

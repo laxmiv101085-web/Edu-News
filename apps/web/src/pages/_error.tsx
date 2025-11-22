@@ -60,3 +60,5 @@ Error.getInitialProps = ({ res, err, asPath }: NextPageContext) => {
 
 export default Error;
 
+
+

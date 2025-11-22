@@ -17,3 +17,5 @@ export const jakarta = Plus_Jakarta_Sans({
 export const fontVariables = `${inter.variable} ${jakarta.variable}`;
 
 
+
+
