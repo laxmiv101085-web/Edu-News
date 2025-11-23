@@ -35,7 +35,7 @@ NEWS_SOURCES=https://rss.app/feeds/v1.1/_T9BqHCOxe3yTBWnG.json,https://feeds.fee
 ### Step 3: Test the Connection
 
 ```bash
-cd apps/api
+
 node test-db.js
 ```
 
