@@ -18,11 +18,19 @@ const Layout = ({ children, title = 'EduNews - Stay Ahead' }: LayoutProps) => {
             </Head>
 
             {/* Global Background Effects */}
-            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-accent-yellow/5 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob"></div>
-                <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] bg-accent-cyan/5 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob animation-delay-2000"></div>
-                <div className="absolute bottom-[-20%] left-[20%] w-[50%] h-[50%] bg-accent-indigo/5 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob animation-delay-4000"></div>
-                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
+            {/* Global Background Effects - GYPTO Theme */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#050505]">
+                {/* Main Gradient Orb (Top Left) */}
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-blob"></div>
+
+                {/* Secondary Gradient Orb (Center Right) */}
+                <div className="absolute top-[20%] right-[-5%] w-[40%] h-[40%] bg-pink-600/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000"></div>
+
+                {/* Bottom Gradient Orb (Bottom Left) */}
+                <div className="absolute bottom-[-10%] left-[10%] w-[45%] h-[45%] bg-blue-600/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-4000"></div>
+
+                {/* Noise Texture */}
+                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.05] mix-blend-overlay"></div>
             </div>
 
             <Navbar />

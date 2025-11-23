@@ -3,7 +3,10 @@ import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import { ArrowRight, Download } from 'lucide-react';
 
+import { useAuth } from '../../hooks/useAuth';
+
 const Hero = () => {
+    const { user } = useAuth();
     return (
         <section className="relative pt-20 pb-32 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -19,10 +22,21 @@ const Hero = () => {
                         </div>
 
                         <h1 className="text-5xl lg:text-7xl font-bold text-white leading-[1.1] mb-6 tracking-tight">
-                            Stay Ahead of Every <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-yellow to-accent-cyan">
-                                Educational Opportunity
-                            </span>
+                            {user ? (
+                                <>
+                                    Welcome back, <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                                        {user.name?.split(' ')[0]}
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    Stay Ahead of Every <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                                        Educational Opportunity
+                                    </span>
+                                </>
+                            )}
                         </h1>
 
                         <p className="text-lg text-neutral-400 mb-8 max-w-xl leading-relaxed">
