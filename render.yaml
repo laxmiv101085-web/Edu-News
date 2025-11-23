@@ -1,4 +1,5 @@
 services:
+  # Backend - Express API
   - type: web
     name: edu-news-api
     env: node
@@ -25,8 +26,20 @@ services:
     region: oregon
     healthCheckPath: /health
     autoDeploy: true
-    # Optional: add a PostgreSQL add‑on (Render will create a DB and set DATABASE_URL automatically)
-    # databases:
-    #   - name: edu-news-db
-    #     plan: free
-    #     postgresVersion: "15"
+    
+  # Frontend - Next.js Web App (Deploy separately if needed)
+  # - type: web
+  #   name: edu-news-web
+  #   env: node
+  #   repo: https://github.com/laxmiv101085-web/Edu-News.git
+  #   branch: main
+  #   rootDir: apps/web
+  #   buildCommand: npm install --prefix . && npm run build
+  #   startCommand: npm start
+  #   envVars:
+  #     - key: NODE_ENV
+  #       value: production
+  #     - key: NEXT_PUBLIC_API_URL
+  #       value: https://edu-news-api.onrender.com
+  #   plan: free
+  #   region: oregon
