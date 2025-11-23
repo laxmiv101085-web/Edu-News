@@ -4,8 +4,9 @@ services:
     env: node
     repo: https://github.com/laxmiv101085-web/Edu-News.git
     branch: main
-    buildCommand: cd apps/api && npm install
-    startCommand: cd apps/api && npm start
+    rootDir: apps/api
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
