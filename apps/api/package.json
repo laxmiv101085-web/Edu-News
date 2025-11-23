@@ -10,6 +10,7 @@
         "test": "echo \"No tests yet\""
     },
     "dependencies": {
+        "@prisma/client": "^7.0.0",
         "axios": "^1.6.2",
         "bcryptjs": "^3.0.3",
         "cors": "^2.8.5",
@@ -22,6 +23,7 @@
         "rss-parser": "^3.13.0"
     },
     "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
         "nodemon": "^3.0.2"
     }
 }
