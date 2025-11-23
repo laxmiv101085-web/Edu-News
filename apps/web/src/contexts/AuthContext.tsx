@@ -1,74 +1,131 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    created_at: string;
+}
 
 interface AuthContextType {
     user: User | null;
     loading: boolean;
-    signInWithGoogle: () => Promise<void>;
-    logout: () => Promise<void>;
+    login: (email: string, password: string) => Promise<void>;
+    register: (name: string, email: string, password: string) => Promise<void>;
+    logout: () => void;
+    error: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
     loading: true,
-    signInWithGoogle: async () => { },
-    logout: async () => { },
+    login: async () => { },
+    register: async () => { },
+    logout: () => { },
+    error: null,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
+    // Check if user is logged in on mount
     useEffect(() => {
-        if (!auth) {
-            setLoading(false);
-            return;
-        }
+        const checkAuth = async () => {
+            const token = localStorage.getItem('auth_token');
 
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            setUser(user);
-            setLoading(false);
-
-            if (user) {
-                // Verify token on server and sync user
-                // Sync user with backend
-                await fetch('/api/auth/sync', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: user.email,
-                        name: user.displayName,
-                        uid: user.uid
-                    }),
-                });
+            if (!token) {
+                setLoading(false);
+                return;
             }
-        });
 
-        return () => unsubscribe();
+            try {
+                const response = await fetch(`${API_URL}/api/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUser(data.user);
+                } else {
+                    // Token invalid, clear it
+                    localStorage.removeItem('auth_token');
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                localStorage.removeItem('auth_token');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
     }, []);
 
-    const signInWithGoogle = async () => {
-        if (!auth) return;
-        const provider = new GoogleAuthProvider();
+    const login = async (email: string, password: string) => {
+        setError(null);
         try {
-            await signInWithPopup(auth, provider);
-        } catch (error) {
-            console.error('Error signing in with Google', error);
+            const response = await fetch(`${API_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            // Store token
+            localStorage.setItem('auth_token', data.token);
+            setUser(data.user);
+        } catch (error: any) {
+            setError(error.message);
+            throw error;
         }
     };
 
-    const logout = async () => {
-        if (!auth) return;
+    const register = async (name: string, email: string, password: string) => {
+        setError(null);
         try {
-            await signOut(auth);
-        } catch (error) {
-            console.error('Error signing out', error);
+            const response = await fetch(`${API_URL}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Registration failed');
+            }
+
+            // Store token
+            localStorage.setItem('auth_token', data.token);
+            setUser(data.user);
+        } catch (error: any) {
+            setError(error.message);
+            throw error;
         }
+    };
+
+    const logout = () => {
+        localStorage.removeItem('auth_token');
+        setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, error }}>
             {children}
         </AuthContext.Provider>
     );
