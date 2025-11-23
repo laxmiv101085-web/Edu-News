@@ -96,42 +96,17 @@ const Hero = () => {
                             <motion.div
                                 animate={{ y: [0, 30, 0] }}
                                 transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                                className="absolute bottom-10 -left-20 w-[500px] p-6 bg-bg-glass backdrop-blur-xl border border-white/10 rounded-2xl shadow-glass z-10"
+                                className="absolute bottom-20 left-0 w-72 p-5 bg-bg-glass backdrop-blur-xl border border-white/10 rounded-2xl shadow-glass z-10"
                             >
-                                <div className="grid grid-cols-3 gap-6">
-                                    {/* Column 1 */}
-                                    <div>
-                                        <h4 className="font-bold text-white text-xs mb-2">EduNews</h4>
-                                        <p className="text-[10px] text-neutral-400 leading-relaxed">
-                                            Your personal hub for exam updates, results, admissions and scholarships. Stay ahead of every important education deadline.
-                                        </p>
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="w-12 h-12 rounded-xl bg-accent-cyan/20 flex items-center justify-center text-accent-cyan">
+                                        📝
                                     </div>
-
-                                    {/* Column 2 */}
-                                    <div>
-                                        <h4 className="font-bold text-white text-xs mb-2">Explore</h4>
-                                        <ul className="space-y-1 text-[10px] text-neutral-400">
-                                            <li className="hover:text-accent-yellow cursor-pointer transition-colors">Home</li>
-                                            <li className="hover:text-accent-yellow cursor-pointer transition-colors">Feed</li>
-                                            <li className="hover:text-accent-yellow cursor-pointer transition-colors">Saved</li>
-                                            <li className="hover:text-accent-yellow cursor-pointer transition-colors">Exam Calendar</li>
-                                            <li className="hover:text-accent-yellow cursor-pointer transition-colors">College Alerts</li>
-                                            <li className="hover:text-accent-yellow cursor-pointer transition-colors">Scholarship Tracker</li>
-                                            <li className="hover:text-accent-yellow cursor-pointer transition-colors">FAQ</li>
-                                        </ul>
-                                    </div>
-
-                                    {/* Column 3 */}
-                                    <div>
-                                        <h4 className="font-bold text-white text-xs mb-2">Contact</h4>
-                                        <ul className="space-y-1 text-[10px] text-neutral-400">
-                                            <li>edunews.app</li>
-                                            <li>support@edunews.app</li>
-                                            <li>@edunews</li>
-                                            <li>Lucknow, India</li>
-                                        </ul>
-                                    </div>
+                                    <span className="px-2 py-1 rounded-md bg-accent-yellow/20 text-accent-yellow text-xs font-bold">New</span>
                                 </div>
+                                <div className="h-3 w-32 bg-white/20 rounded mb-2"></div>
+                                <div className="h-2 w-full bg-white/10 rounded mb-2"></div>
+                                <div className="h-2 w-2/3 bg-white/10 rounded"></div>
                             </motion.div>
                         </div>
                     </motion.div>
