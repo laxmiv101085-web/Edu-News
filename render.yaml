@@ -14,13 +14,12 @@ services:
         value: "10000"
       - key: DATABASE_URL
         value: postgresql://neondb_owner:npg_2IKtOBFq8MQZ@ep-twilight-snow-a10gdjoy-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
-        fromDatabase: true   # you will attach a Render PostgreSQL instance
       - key: JWT_SECRET
         value: "88c56dddd9139bcc4b4ec088bc2b6c72dda07b0887c349584b2b5aa0c1bab842ce817a718acafc7527c9d03eb383c1c3b7cd7c7c7ef49e1e5402c5bd4984a616"
       - key: NEWS_API_KEY
         value: 172149081aca4657947b6f3efdd084b9
       - key: CORS_ORIGIN
-        value: https://educational-app-theta.vercel.app/
+        value: https://educational-app-theta.vercel.app
       - key: NEWS_SOURCES
         value: "https://rss.app/feeds/v1.1/_T9BqHCOxe3yTBWnG.json,https://feeds.feedburner.com/ndtvnews-education"
     plan: free
