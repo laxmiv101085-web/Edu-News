@@ -40,12 +40,12 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-50 p-4 relative overflow-hidden">
-      {/* Background Blobs */}
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #E9D5FF 0%, #C4B5FD 50%, #A78BFA 100%)' }}>
+      {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-[20%] right-[-10%] w-[35%] h-[35%] bg-accent-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-[30%] right-[10%] w-[250px] h-[250px] bg-purple-300/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-[15%] left-[15%] w-[200px] h-[200px] bg-indigo-300/25 rounded-full blur-3xl"></div>
       </div>
 
       <motion.div
