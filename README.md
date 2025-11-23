@@ -1,319 +1,188 @@
-# Educational Real-Time News & Notifications Platform (MVP)
+# Edu-News Platform
 
-A full-stack MVP that automatically ingests exam/scholarship/result notices from trusted sources, summarizes and classifies them with AI, stores them in a database, shows a searchable feed in a Next.js web app (PWA), and sends real-time notifications (web + mobile via FCM).
+A modern educational news and notifications platform featuring a beautiful Next.js frontend with cloud-ready backend integration.
 
-## 🚀 Quick Start
+## 🎯 Current Status
 
-### Prerequisites
+### ✅ Frontend (Complete)
+- **Next.js 14** with React 18
+- **Premium UI Design** with glassmorphism effects
+- **TailwindCSS** styling with Framer Motion animations
+- **PWA Support** for mobile installation
+- **Responsive Design** for all devices
 
-- Node.js 18+ and npm
-- Docker and Docker Compose
-- PostgreSQL 14+ (or use Docker)
-- Redis 6+ (or use Docker)
-
-### Local Development
-
-1. **Clone and install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Set up environment variables:**
-   ```bash
-   cp apps/api/.env.example apps/api/.env
-   cp apps/web/.env.example apps/web/.env.local
-   # Edit the .env files with your configuration
-   ```
-
-3. **Start infrastructure (PostgreSQL, Redis):**
-   ```bash
-   docker-compose -f infra/docker-compose.yml up -d postgres redis
-   ```
-
-4. **Run database migrations:**
-   ```bash
-   npm run migrate
-   ```
-
-5. **Seed sample data:**
-   ```bash
-   npm run seed
-   ```
-
-6. **Start all services:**
-   ```bash
-   npm run dev
-   ```
-
-   This will start:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:4000
-   - Worker: Background processing
-
-### Environment Variables
-
-#### Backend (`apps/api/.env`)
-```env
-# Database
-DATABASE_URL=postgres://user:password@localhost:5432/educational_news
-
-# Redis
-REDIS_URL=redis://localhost:6379
-
-# JWT
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
-JWT_EXPIRES_IN=7d
-
-# OpenAI (optional - use mock adapter if not provided)
-OPENAI_API_KEY=sk-your-openai-api-key
-
-# Firebase Cloud Messaging
-FIREBASE_SERVER_KEY=your-fcm-server-key
-FIREBASE_PROJECT_ID=your-firebase-project-id
-
-# Web Push (VAPID)
-VAPID_PUBLIC_KEY=your-vapid-public-key
-VAPID_PRIVATE_KEY=your-vapid-private-key
-
-# API
-PORT=4000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:3000
-
-# Admin
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=admin123
-```
-
-#### Frontend (`apps/web/.env.local`)
-```env
-NEXT_PUBLIC_API_URL=http://localhost:4000
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-vapid-public-key
-```
+### 🚧 Backend (Ready for Integration)
+The backend has been cleaned up and is ready for fresh integration with your cloud services.
 
 ## 📁 Project Structure
 
 ```
-.
+Edu-News/
 ├── apps/
-│   ├── api/          # NestJS backend API
-│   └── web/          # Next.js frontend
-├── worker/           # Background job processor
-├── infra/            # Docker compose, deployment configs
-├── scripts/          # Migration and seed scripts
-└── README.md
+│   └── web/              # Next.js Frontend Application
+│       ├── src/
+│       │   ├── pages/    # Next.js pages (routes)
+│       │   ├── components/  # React components
+│       │   ├── styles/   # Global styles
+│       │   └── lib/      # Utilities and helpers
+│       └── public/       # Static assets
+├── package.json          # Root package file
+└── README.md            # This file
 ```
 
-## 🗄️ Database Schema
+## 🚀 Quick Start
 
-The application uses PostgreSQL with Prisma ORM. Key tables:
+### Prerequisites
+- Node.js 18+ and npm
+- Cloud PostgreSQL database (e.g., Neon, Supabase)
+- Cloud Redis instance (e.g., Upstash) - optional
 
-- `users` - User accounts
-- `user_devices` - FCM tokens for push notifications
-- `alert_rules` - User-defined notification rules
-- `sources` - RSS/API/HTML sources to ingest
-- `raw_items` - Raw ingested content
-- `items` - Processed items with AI summaries
-- `notifications` - Notification records
+### Installation
 
-See `apps/api/prisma/schema.prisma` for full schema.
-
-## 🔌 API Endpoints
-
-### Authentication
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - Login user
-
-### Feed
-- `GET /feed` - Get paginated feed (auth optional)
-- `GET /items/:id` - Get item details
-
-### Alert Rules (Authenticated)
-- `POST /alert-rules` - Create alert rule
-- `GET /alert-rules` - List user's alert rules
-- `DELETE /alert-rules/:id` - Delete alert rule
-
-### Sources (Admin)
-- `POST /sources` - Add new source
-- `GET /sources` - List all sources
-- `PUT /sources/:id` - Update source
-- `DELETE /sources/:id` - Delete source
-
-### Devices (Authenticated)
-- `POST /user/devices/register` - Register FCM token
-
-### Example cURL Commands
-
-**Register:**
-```bash
-curl -X POST http://localhost:4000/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"John Doe","email":"john@example.com","password":"password123"}'
-```
-
-**Login:**
-```bash
-curl -X POST http://localhost:4000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"john@example.com","password":"password123"}'
-```
-
-**Get Feed:**
-```bash
-curl http://localhost:4000/feed?page=1&limit=10
-```
-
-**Create Alert Rule (with auth token):**
-```bash
-curl -X POST http://localhost:4000/alert-rules \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{
-    "name": "JEE Notifications",
-    "keywords": ["JEE", "Joint Entrance"],
-    "examNames": ["JEE Main", "JEE Advanced"],
-    "types": ["exam", "scholarship"],
-    "locations": ["Uttar Pradesh"]
-  }'
-```
-
-**Add Source (admin):**
-```bash
-curl -X POST http://localhost:4000/sources \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ADMIN_JWT_TOKEN" \
-  -d '{
-    "name": "JEE Official",
-    "url": "https://jeemain.nta.ac.in/rss",
-    "sourceType": "rss",
-    "trustLevel": 9,
-    "pollIntervalMinutes": 60
-  }'
-```
-
-**Register Device:**
-```bash
-curl -X POST http://localhost:4000/user/devices/register \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{
-    "fcmToken": "your-fcm-token",
-    "platform": "web"
-  }'
-```
-
-## 🤖 AI Processing
-
-The system uses an AI adapter pattern for processing items. By default, a mock adapter is used for local testing.
-
-### Enable OpenAI
-
-1. Set `OPENAI_API_KEY` in `apps/api/.env`
-2. The system will automatically use OpenAI adapter when the key is present
-3. For local testing without OpenAI, the mock adapter will be used
-
-### AI Adapter Interface
-
-The AI adapter extracts:
-- Short summary (≤40 words)
-- Long summary (≤150 words)
-- Tags
-- Entities (exam name, dates, institutions)
-
-## 📱 Adding a New Source
-
-1. **Via Admin Panel:**
-   - Login as admin
-   - Navigate to Admin → Sources
-   - Click "Add Source"
-   - Fill in: Name, URL, Type (RSS/API/HTML), Trust Level, Poll Interval
-
-2. **Via API:**
+1. **Install dependencies:**
    ```bash
-   curl -X POST http://localhost:4000/sources \
-     -H "Authorization: Bearer ADMIN_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name":"...","url":"...","sourceType":"rss","trustLevel":8}'
+   npm install
    ```
 
-3. **The worker will automatically:**
-   - Poll the source at the specified interval
-   - Respect robots.txt for HTML sources
-   - Ingest and process new items
-   - Match against user alert rules
+2. **Configure environment variables:**
+   ```bash
+   cd apps/web
+   cp .env.example .env.local
+   # Edit .env.local with your backend API URL
+   ```
 
-## 🧪 Running Tests
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-```bash
-# Run all tests
-npm run test
+4. **Open your browser:**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-# Run backend tests only
-npm run test:api
+## 🎨 Frontend Features
 
-# Run frontend tests only
-npm run test:web
+### Pages
+- **Home Page** - Landing page with hero section and featured content
+- **Feed Page** - Scrollable news feed with category filtering
+- **Article Detail** - Beautiful reading experience with sticky sidebar
+- **Saved Items** - Bookmarked articles page
+- **Login/Signup** - Authentication pages with social auth support
+
+### Components
+- **Button** - Reusable button with multiple variants and animations
+- **Card** - Generic card component with glassmorphism support
+- **Sidebar** - Collapsible navigation with active states
+- **Topbar** - Sticky header with search functionality
+- **ArticleCard** - Specialized card for news items
+- **MainLayout** - Consistent layout wrapper
+
+### Design System
+- **Premium Aesthetics** with glassmorphism and gradients
+- **Modern Typography** using Inter font family
+- **Smooth Animations** with Framer Motion
+- **Dark Mode** optimized color palette
+- **Responsive** mobile-first design
+
+## 🔧 Environment Variables
+
+Create `apps/web/.env.local`:
+
+```env
+# Backend API URL (update when you integrate your backend)
+NEXT_PUBLIC_API_URL=http://localhost:4000
+
+# Optional: Firebase/Push Notifications
+NEXT_PUBLIC_FIREBASE_CONFIG=your-config-here
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-vapid-key
 ```
 
-## 🚢 Deployment
+## 📱 Available Scripts
 
-### Frontend (Vercel)
-
-1. Connect your GitHub repo to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main
-
-### Backend & Worker (Render/GCP)
-
-1. **Render:**
-   - Create new Web Service for API
-   - Create new Background Worker for worker
-   - Set environment variables
-   - Deploy from GitHub
-
-2. **GCP:**
-   - Use Cloud Run for API
-   - Use Cloud Run Jobs for worker
-   - See `infra/gcp/` for Terraform examples
-
-### Docker Compose (Production)
+From the root directory:
 
 ```bash
-docker-compose -f infra/docker-compose.prod.yml up -d
+npm run dev        # Start frontend development server
+npm run build      # Build frontend for production
+npm run test       # Run frontend tests
+npm run lint       # Lint frontend code
 ```
 
-## 📋 Checklist / Next Steps
+From `apps/web`:
 
-- [x] **How to run locally:** See "Local Development" section above
-- [x] **How to add a new source:** See "Adding a New Source" section
-- [x] **How to enable OpenAI:** Set `OPENAI_API_KEY` in `.env`
-- [x] **How to run tests:** `npm run test`
-- [x] **How to deploy:** See "Deployment" section
+```bash
+npm run dev        # Start Next.js dev server
+npm run build      # Build for production
+npm run start      # Start production server
+npm run test       # Run Jest tests
+npm run storybook  # Start Storybook UI component explorer
+```
 
-## 🔒 Security & Compliance
+## 🔌 Backend Integration Guide
 
-- Passwords are hashed with bcrypt
-- JWT tokens for authentication
-- Rate limiting on public APIs
-- CORS policy for trusted domains
-- Robots.txt respect for scraping
-- Data retention policies (configurable)
+When you're ready to integrate your backend:
 
-## 📊 Monitoring
+1. **Create your backend service** (Node.js, Python, etc.)
+2. **Set up cloud database** (PostgreSQL on Neon, Supabase, etc.)
+3. **Configure Redis** for caching/queues (Upstash, Redis Cloud, etc.)
+4. **Update environment variables** in `apps/web/.env.local`
+5. **Implement API endpoints** that the frontend expects:
+   - `GET /api/feed` - Get news articles
+   - `GET /api/articles/:id` - Get article details
+   - `POST /api/auth/login` - User authentication
+   - `POST /api/auth/register` - User registration
+   - And more as needed...
 
-- Health check endpoint: `GET /health`
-- Metrics endpoint: `GET /metrics` (Prometheus format)
-- Logging via Winston (backend) and console (frontend)
+## 🌐 Deployment
 
-## 🤝 Contributing
+### Frontend (Vercel - Recommended)
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+1. Push your code to GitHub
+2. Import project in [Vercel](https://vercel.com)
+3. Configure build settings:
+   - **Framework Preset:** Next.js
+   - **Root Directory:** `apps/web`
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `.next`
+4. Add environment variables
+5. Deploy!
+
+### Alternative: Netlify
+
+1. Connect repository to Netlify
+2. Set base directory to `apps/web`
+3. Build command: `npm run build`
+4. Publish directory: `.next`
+
+## 🎓 Default Credentials
+
+When backend is integrated, use these test accounts:
+- **Admin:** admin@example.com / admin123
+- **User:** student1@example.com / password123
+
+## 📚 Tech Stack
+
+### Frontend
+- **Framework:** Next.js 14
+- **UI Library:** React 18
+- **Styling:** TailwindCSS 3.3
+- **Animations:** Framer Motion
+- **State Management:** React Query (TanStack Query)
+- **Forms:** React Hook Form + Zod validation
+- **HTTP Client:** Axios
+- **Icons:** Heroicons + Lucide React
+
+### Backend (To Be Integrated)
+- Your choice! (NestJS, Express, FastAPI, Django, etc.)
+- PostgreSQL database
+- Redis for caching (optional)
+- Firebase for push notifications (optional)
 
 ## 📄 License
 
 MIT
 
+---
+
+**Ready to integrate your backend!** 🚀
+
+The frontend is fully functional and ready. Now you can build your backend with your preferred technology stack and connect it to the cloud database you've set up.

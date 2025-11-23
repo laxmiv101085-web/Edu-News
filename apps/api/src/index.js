@@ -1,0 +1,207 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import cron from 'node-cron';
+import pool, { initDatabase } from './database.js';
+import { runIngestion } from './ingestion.js';
+import authRoutes from './auth.js';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 4000;
+
+// Middleware
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
+}));
+app.use(express.json());
+
+// Request logging
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+});
+
+// ==================== ROUTES ====================
+
+// Auth Routes
+app.use('/api/auth', authRoutes);
+
+// Health check
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        database: 'connected'
+    });
+});
+
+// Get feed/articles with pagination and filtering
+app.get('/api/feed', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const category = req.query.category;
+        const offset = (page - 1) * limit;
+
+        let query = 'SELECT * FROM articles';
+        let countQuery = 'SELECT COUNT(*) FROM articles';
+        const params = [];
+
+        // Filter by category if provided
+        if (category && category !== 'all') {
+            query += ' WHERE category = $1';
+            countQuery += ' WHERE category = $1';
+            params.push(category);
+        }
+
+        // Get total count
+        const countResult = await pool.query(countQuery, params);
+        const total = parseInt(countResult.rows[0].count);
+
+        // Get paginated results
+        query += ' ORDER BY published_at DESC, created_at DESC';
+        query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+        params.push(limit, offset);
+
+        const result = await pool.query(query, params);
+
+        res.json({
+            items: result.rows,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching feed:', error);
+        res.status(500).json({ error: 'Failed to fetch articles' });
+    }
+});
+
+// Get single article by ID
+app.get('/api/articles/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            'SELECT * FROM articles WHERE id = $1',
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Article not found' });
+        }
+
+        res.json(result.rows[0]);
+
+    } catch (error) {
+        console.error('Error fetching article:', error);
+        res.status(500).json({ error: 'Failed to fetch article' });
+    }
+});
+
+// Get categories with article counts
+app.get('/api/categories', async (req, res) => {
+    try {
+        const result = await pool.query(`
+      SELECT category, COUNT(*) as count
+      FROM articles
+      GROUP BY category
+      ORDER BY count DESC
+    `);
+
+        res.json(result.rows);
+
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+});
+
+// Trigger manual ingestion
+app.post('/api/admin/ingest', async (req, res) => {
+    try {
+        console.log('📥 Manual ingestion triggered');
+        const result = await runIngestion();
+        res.json(result);
+    } catch (error) {
+        console.error('Error running ingestion:', error);
+        res.status(500).json({ error: 'Ingestion failed', message: error.message });
+    }
+});
+
+// Get database stats
+app.get('/api/stats', async (req, res) => {
+    try {
+        const articlesCount = await pool.query('SELECT COUNT(*) FROM articles');
+        const latestArticle = await pool.query(
+            'SELECT created_at FROM articles ORDER BY created_at DESC LIMIT 1'
+        );
+
+        res.json({
+            totalArticles: parseInt(articlesCount.rows[0].count),
+            latestArticle: latestArticle.rows[0]?.created_at || null
+        });
+
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        res.status(500).json({ error: 'Failed to fetch stats' });
+    }
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: 'Not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+});
+
+// ==================== STARTUP ====================
+
+async function startServer() {
+    try {
+        // Initialize database
+        console.log('🔧 Initializing database...');
+        await initDatabase();
+
+        // Run initial ingestion
+        console.log('📥 Running initial ingestion...');
+        await runIngestion();
+
+        // Schedule periodic ingestion (every 30 minutes)
+        cron.schedule('*/30 * * * *', async () => {
+            console.log('⏰ Scheduled ingestion starting...');
+            await runIngestion();
+        });
+
+        console.log('✅ Scheduled ingestion: Every 30 minutes');
+
+        // Start Express server
+        app.listen(PORT, () => {
+            console.log('');
+            console.log('🚀 ================================');
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`🚀 API URL: http://localhost:${PORT}`);
+            console.log(`🚀 Health: http://localhost:${PORT}/health`);
+            console.log(`🚀 Feed: http://localhost:${PORT}/api/feed`);
+            console.log('🚀 ================================');
+            console.log('');
+        });
+
+    } catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
+    }
+}
+
+// Start the server
+startServer();

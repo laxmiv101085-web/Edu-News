@@ -1,25 +1,18 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    apiKey: "AIzaSyDaL1P6cmkjcRou6eoYY5gOvR3Zdit0z3E",
+    authDomain: "vibe-eda-circuits.firebaseapp.com",
+    projectId: "vibe-eda-circuits",
+    storageBucket: "vibe-eda-circuits.firebasestorage.app",
+    messagingSenderId: "291231859910",
+    appId: "1:291231859910:web:1904e4bbac9ad062bd83c7",
+    measurementId: "G-2ZEYLDBW21"
 };
 
-let app: FirebaseApp | undefined;
-let auth: Auth | undefined;
-let db: Firestore | undefined;
+// Initialize Firebase (singleton pattern)
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
 
-// Only initialize if we have the required env vars (client-side only)
-if (typeof window !== 'undefined' && firebaseConfig.apiKey) {
-    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-    auth = getAuth(app);
-    db = getFirestore(app);
-}
-
-export { app, auth, db };
+export { app, auth };

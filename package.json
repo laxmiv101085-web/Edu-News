@@ -4,26 +4,17 @@
   "description": "Educational Real-Time News & Notifications Platform MVP",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "worker"
+    "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\" \"npm run dev:worker\"",
-    "dev:api": "cd apps/api && npm run start:dev",
+    "dev": "npm run dev:web",
     "dev:web": "cd apps/web && npm run dev",
-    "dev:worker": "cd worker && npm run dev",
-    "build": "npm run build:api && npm run build:web && npm run build:worker",
-    "build:api": "cd apps/api && npm run build",
+    "build": "npm run build:web",
     "build:web": "cd apps/web && npm run build",
-    "build:worker": "cd worker && npm run build",
-    "test": "npm run test:api && npm run test:web",
-    "test:api": "cd apps/api && npm run test",
+    "test": "npm run test:web",
     "test:web": "cd apps/web && npm run test",
-    "lint": "npm run lint:api && npm run lint:web",
-    "lint:api": "cd apps/api && npm run lint",
-    "lint:web": "cd apps/web && npm run lint",
-    "migrate": "cd apps/api && npm run migrate",
-    "seed": "cd apps/api && npm run seed"
+    "lint": "npm run lint:web",
+    "lint:web": "cd apps/web && npm run lint"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

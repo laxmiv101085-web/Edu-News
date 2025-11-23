@@ -32,11 +32,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             if (user) {
                 // Verify token on server and sync user
-                const token = await user.getIdToken();
-                await fetch('/api/auth/verify', {
+                // Sync user with backend
+                await fetch('/api/auth/sync', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token }),
+                    body: JSON.stringify({
+                        email: user.email,
+                        name: user.displayName,
+                        uid: user.uid
+                    }),
                 });
             }
         });
