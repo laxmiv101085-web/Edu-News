@@ -3,9 +3,10 @@ services:
   - type: web
     name: edu-news-api
     env: node
+    repo: https://github.com/laxmiv101085-web/Edu-News.git
     branch: main
     rootDir: apps/api
-    buildCommand: npm install
+    buildCommand: npm install --prefix .
     startCommand: node src/index.js
     envVars:
       - key: NODE_ENV
@@ -19,7 +20,7 @@ services:
       - key: NEWS_API_KEY
         value: 172149081aca4657947b6f3efdd084b9
       - key: CORS_ORIGIN
-        value: https://educational-app-theta.vercel.app
+        value: https://educational-favsoa8ce-ujjwal-dixits-projects.vercel.app
       - key: NEWS_SOURCES
         value: "https://rss.app/feeds/v1.1/_T9BqHCOxe3yTBWnG.json,https://feeds.feedburner.com/ndtvnews-education"
     plan: free
