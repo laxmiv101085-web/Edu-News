@@ -55,7 +55,7 @@ export default function Login() {
         className="w-full max-w-md relative z-10"
       >
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-2xl text-white shadow-lg shadow-primary-600/20 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-accent-yellow rounded-2xl text-white shadow-lg shadow-accent-yellow/20 mb-4">
             <GraduationCap size={32} />
           </div>
           <h1 className="text-3xl font-bold text-neutral-900 font-display">
