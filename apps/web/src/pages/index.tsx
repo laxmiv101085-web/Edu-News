@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import Hero from '../components/landing/Hero';
 import Features from '../components/landing/Features';
 import Highlight from '../components/landing/Highlight';
-import CTA from '../components/landing/CTA';
+
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
       <Hero />
       <Features />
       <Highlight />
-      <CTA />
+
     </Layout>
   );
 }

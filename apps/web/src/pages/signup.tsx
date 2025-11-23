@@ -160,36 +160,7 @@ export default function Signup() {
           </div>
         </div>
 
-        {/* Live Preview Box */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 p-4 rounded-xl bg-black/40 border border-white/5 backdrop-blur-md"
-        >
-          <div className="flex items-center gap-2 mb-3 border-b border-white/5 pb-2">
-            <div className="w-2 h-2 rounded-full bg-red-500" />
-            <div className="w-2 h-2 rounded-full bg-yellow-500" />
-            <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-xs text-gray-500 font-mono ml-2">Live Preview</span>
-          </div>
-          <div className="space-y-2 font-mono text-xs">
-            <div className="flex justify-between">
-              <span className="text-gray-500">name:</span>
-              <span className="text-purple-400">{formData.name || "..."}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">email:</span>
-              <span className="text-cyan-400">{formData.email || "..."}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">password:</span>
-              <span className="text-gray-600">
-                {formData.password ? "******" : "..."}
-              </span>
-            </div>
-          </div>
-        </motion.div>
+
       </motion.div>
     </div>
   );
