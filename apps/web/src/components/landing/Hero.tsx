@@ -16,7 +16,10 @@ const Hero = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-accent-yellow text-sm font-medium mb-6 backdrop-blur-sm">
+                            <span className="w-2 h-2 rounded-full bg-accent-yellow mr-2 animate-pulse"></span>
+                            New: Scholarship Portal Live
+                        </div>
 
                         <h1 className="text-5xl lg:text-7xl font-bold text-white leading-[1.1] mb-6 tracking-tight">
                             {user ? (
