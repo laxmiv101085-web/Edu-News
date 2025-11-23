@@ -19,7 +19,13 @@ export default function Saved() {
             }
 
             try {
-                const token = await user.getIdToken();
+                const token = localStorage.getItem('auth_token');
+                if (!token) {
+                    console.error('No auth token found');
+                    setLoading(false);
+                    return;
+                }
+
                 const res = await fetch('/api/user/saved', {
                     headers: {
                         'Authorization': `Bearer ${token}`,

@@ -44,7 +44,7 @@ export default function Feed() {
             <h1 className="text-4xl font-bold text-white mb-2">Your Feed</h1>
             <p className="text-neutral-400">
               {isConnected ? 'Live updates active.' : 'Connecting to live updates...'}
-              {user && ` Welcome back, ${user.displayName?.split(' ')[0]}!`}
+              {user && ` Welcome back, ${user.name?.split(' ')[0]}!`}
             </p>
           </div>
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
