@@ -173,35 +173,48 @@ async function startServer() {
         console.log('🔧 Initializing database...');
         await initDatabase();
 
-        // Run initial ingestion
-        console.log('📥 Running initial ingestion...');
-        await runIngestion();
-
-        // Schedule periodic ingestion (every 30 minutes)
-        cron.schedule('*/30 * * * *', async () => {
-            console.log('⏰ Scheduled ingestion starting...');
+        // Only run ingestion and cron if NOT in Vercel environment
+        if (!process.env.VERCEL) {
+            // Run initial ingestion
+            console.log('📥 Running initial ingestion...');
             await runIngestion();
-        });
 
-        console.log('✅ Scheduled ingestion: Every 30 minutes');
+            // Schedule periodic ingestion (every 30 minutes)
+            cron.schedule('*/30 * * * *', async () => {
+                console.log('⏰ Scheduled ingestion starting...');
+                await runIngestion();
+            });
 
-        // Start Express server
-        app.listen(PORT, () => {
-            console.log('');
-            console.log('🚀 ================================');
-            console.log(`🚀 Server running on port ${PORT}`);
-            console.log(`🚀 API URL: http://localhost:${PORT}`);
-            console.log(`🚀 Health: http://localhost:${PORT}/health`);
-            console.log(`🚀 Feed: http://localhost:${PORT}/api/feed`);
-            console.log('🚀 ================================');
-            console.log('');
-        });
+            console.log('✅ Scheduled ingestion: Every 30 minutes');
+        } else {
+            console.log('ℹ️ Running in Vercel environment - Background tasks disabled');
+        }
+
+        // Start Express server only if not in Vercel (Vercel handles the server)
+        if (!process.env.VERCEL) {
+            app.listen(PORT, () => {
+                console.log('');
+                console.log('🚀 ================================');
+                console.log(`🚀 Server running on port ${PORT}`);
+                console.log(`🚀 API URL: http://localhost:${PORT}`);
+                console.log(`🚀 Health: http://localhost:${PORT}/health`);
+                console.log(`🚀 Feed: http://localhost:${PORT}/api/feed`);
+                console.log('🚀 ================================');
+                console.log('');
+            });
+        }
 
     } catch (error) {
         console.error('❌ Failed to start server:', error);
-        process.exit(1);
+        // Don't exit process in Vercel, just log error
+        if (!process.env.VERCEL) {
+            process.exit(1);
+        }
     }
 }
 
-// Start the server
+// Start the server logic
 startServer();
+
+// Export the app for Vercel
+export default app;
