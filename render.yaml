@@ -1,0 +1,36 @@
+services:
+  # Frontend - Next.js Web App
+  - type: web
+    name: edu-news-web
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd apps/web && npm install && npm run build
+    startCommand: cd apps/web && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://edu-news-api.onrender.com
+    
+  # Backend - Express API
+  - type: web
+    name: edu-news-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd apps/api && npm install
+    startCommand: cd apps/api && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: CORS_ORIGIN
+        sync: false # Set this manually to your frontend URL
+      - key: DATABASE_URL
+        sync: false # Set this manually in Render Dashboard
+      - key: NEWS_API_KEY
+        sync: false # Optional
+      - key: NEWS_SOURCES
+        sync: false # Optional
