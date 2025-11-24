@@ -13,7 +13,24 @@ const PORT = process.env.PORT || 4000;
 
 // Middleware
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
+    origin: function (origin, callback) {
+        const allowedOrigins = [
+            process.env.CORS_ORIGIN,
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'https://educational-app-theta.vercel.app'
+        ].filter(Boolean);
+
+        // Allow any vercel.app domain
+        const isVercelDomain = origin && origin.includes('.vercel.app');
+
+        if (!origin || allowedOrigins.indexOf(origin) !== -1 || isVercelDomain) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
 }));
 app.use(express.json());
 
