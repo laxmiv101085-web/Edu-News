@@ -9,8 +9,12 @@ const rssParser = new Parser({
     customFields: {
         item: [
             ['media:content', 'mediaContent'],
+            ['media:thumbnail', 'mediaThumbnail'],
             ['content:encoded', 'contentEncoded'],
-            ['description', 'description']
+            ['description', 'description'],
+            ['enclosure', 'enclosure'],
+            ['image', 'image'],
+            ['itunes:image', 'itunesImage']
         ]
     }
 });
@@ -24,20 +28,63 @@ const NEWS_SOURCES = process.env.NEWS_SOURCES
  * Extract image URL from various RSS feed formats
  */
 function extractImageUrl(item) {
-    // Try media:content
-    if (item.mediaContent && item.mediaContent.$) {
-        return item.mediaContent.$.url;
+    // Try media:content (YouTube, etc.)
+    if (item.mediaContent) {
+        if (item.mediaContent.$ && item.mediaContent.$.url) {
+            return item.mediaContent.$.url;
+        }
+        if (typeof item.mediaContent === 'string') {
+            return item.mediaContent;
+        }
     }
 
-    // Try enclosure
-    if (item.enclosure && item.enclosure.url) {
-        return item.enclosure.url;
+    // Try media:thumbnail
+    if (item['media:thumbnail'] && item['media:thumbnail'].$ && item['media:thumbnail'].$.url) {
+        return item['media:thumbnail'].$.url;
     }
 
-    // Try to find image in content
+    // Try enclosure (common in RSS 2.0)
+    if (item.enclosure) {
+        if (item.enclosure.url) {
+            return item.enclosure.url;
+        }
+        if (item.enclosure.$ && item.enclosure.$.url) {
+            return item.enclosure.$.url;
+        }
+    }
+
+    // Try direct image field
+    if (item.image) {
+        if (typeof item.image === 'string') {
+            return item.image;
+        }
+        if (item.image.url) {
+            return item.image.url;
+        }
+    }
+
+    // Try to find image in content:encoded or content
     if (item.contentEncoded || item.content) {
         const content = item.contentEncoded || item.content;
-        const imgMatch = content.match(/<img[^>]+src="([^">]+)"/);
+
+        // Try multiple image patterns
+        const patterns = [
+            /<img[^>]+src=["']([^"']+)["']/i,
+            /<img[^>]+src=([^\s>]+)/i,
+            /https?:\/\/[^\s<>"]+\.(?:jpg|jpeg|png|gif|webp)/i
+        ];
+
+        for (const pattern of patterns) {
+            const match = content.match(pattern);
+            if (match) {
+                return match[1] || match[0];
+            }
+        }
+    }
+
+    // Try description field
+    if (item.description) {
+        const imgMatch = item.description.match(/<img[^>]+src=["']([^"']+)["']/i);
         if (imgMatch) {
             return imgMatch[1];
         }

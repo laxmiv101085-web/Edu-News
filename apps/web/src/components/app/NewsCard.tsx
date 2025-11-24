@@ -33,7 +33,17 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
                     alt={article.title}
                     onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80';
+                        // Try multiple fallback images
+                        if (!target.dataset.fallbackAttempt) {
+                            target.dataset.fallbackAttempt = '1';
+                            target.src = 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80';
+                        } else if (target.dataset.fallbackAttempt === '1') {
+                            target.dataset.fallbackAttempt = '2';
+                            target.src = 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80';
+                        } else if (target.dataset.fallbackAttempt === '2') {
+                            target.dataset.fallbackAttempt = '3';
+                            target.src = 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80';
+                        }
                     }}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                 />
