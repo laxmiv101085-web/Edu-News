@@ -47,6 +47,41 @@ function extractImageUrl(item) {
 }
 
 /**
+ * Fetch article page and extract og:image
+ */
+async function scrapeImageFromUrl(url) {
+    if (!url) return null;
+    try {
+        const response = await axios.get(url, {
+            timeout: 5000,
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; EduNewsBot/1.0)' }
+        });
+        const html = response.data;
+
+        // Look for og:image
+        const ogImageMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^">]+)"/i) ||
+            html.match(/<meta[^>]+content="([^">]+)"[^>]+property="og:image"/i);
+
+        if (ogImageMatch) {
+            return ogImageMatch[1];
+        }
+
+        // Look for twitter:image
+        const twitterImageMatch = html.match(/<meta[^>]+name="twitter:image"[^>]+content="([^">]+)"/i) ||
+            html.match(/<meta[^>]+content="([^">]+)"[^>]+name="twitter:image"/i);
+
+        if (twitterImageMatch) {
+            return twitterImageMatch[1];
+        }
+
+    } catch (error) {
+        // Ignore errors, just return null
+        // console.log(`Failed to scrape image from ${url}: ${error.message}`);
+    }
+    return null;
+}
+
+/**
  * Clean and truncate text
  */
 function cleanText(text, maxLength = 500) {
@@ -134,6 +169,11 @@ async function processRssFeed(feed) {
                 published_at: item.pubDate ? new Date(item.pubDate) : new Date(),
                 category: 'general'
             };
+
+            // If no image found, try to scrape it
+            if (!article.image_url) {
+                article.image_url = await scrapeImageFromUrl(article.url);
+            }
 
             // Categorize
             article.category = categorizeArticle(article.title, article.content);

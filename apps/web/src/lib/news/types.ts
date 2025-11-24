@@ -12,7 +12,7 @@ export interface Article {
     publishedAt: string; // ISO string
     category: 'scholarships' | 'exams' | 'results' | 'admissions' | 'policy' | 'general';
     tags: string[];
-    image?: string;
+    image_url?: string;
     language: string;
     authorityScore?: number;
 }

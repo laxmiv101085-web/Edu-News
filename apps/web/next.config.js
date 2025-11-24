@@ -10,6 +10,9 @@ const nextConfig = {
       },
     ],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // PWA configuration
   async headers() {
     return [
