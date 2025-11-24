@@ -27,6 +27,14 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://edu-news-e5qk.onrender.com/api/:path*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
