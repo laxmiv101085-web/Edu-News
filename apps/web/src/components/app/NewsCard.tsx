@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Calendar, ArrowUpRight } from 'lucide-react';
 import SaveButton from './SaveButton';
+import ShareButton from './ShareButton';
 import { Article } from '../../lib/news/types';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -37,8 +38,9 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
                         {article.category}
                     </span>
                 </div>
-                <div className="absolute top-4 right-4 z-20">
-                    <SaveButton articleId={article.id} />
+                <div className="absolute top-4 right-4 z-20 flex gap-2">
+                    <ShareButton title={article.title} url={article.url} />
+                    <SaveButton articleId={Number(article.id)} />
                 </div>
             </div>
 
