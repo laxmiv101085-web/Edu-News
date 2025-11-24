@@ -233,8 +233,11 @@ app.delete('/api/bookmarks/:articleId', authenticateToken, async (req, res) => {
     }
 });
 
-// Trigger manual ingestion
-app.post('/api/admin/ingest', async (req, res) => {
+// Trigger manual ingestion (POST for manual, GET for Cron)
+app.use('/api/admin/ingest', async (req, res) => {
+    if (req.method !== 'POST' && req.method !== 'GET') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
     try {
         console.log('📥 Manual ingestion triggered');
         const result = await runIngestion();

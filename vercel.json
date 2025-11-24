@@ -26,5 +26,11 @@
             "src": "/(.*)",
             "dest": "/apps/web/$1"
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/admin/ingest",
+            "schedule": "0 * * * *"
+        }
     ]
 }
