@@ -17,7 +17,7 @@ export const normalizeArticle = (raw: any, sourceName: string, category: Article
         publishedAt: raw.pubDate ? new Date(raw.pubDate).toISOString() : new Date().toISOString(),
         category: category,
         tags: [],
-        image: raw.enclosure?.url || raw.image || raw.urlToImage, // Handle RSS enclosure or API image fields
+        image_url: raw.enclosure?.url || raw.image || raw.urlToImage, // Handle RSS enclosure or API image fields
         language: 'en',
     };
 };

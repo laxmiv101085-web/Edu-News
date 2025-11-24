@@ -78,7 +78,7 @@ export default function ArticlePage() {
                                 </Button>
                                 <div className="flex items-center justify-between p-3 rounded-xl bg-bg-dark border border-white/10">
                                     <span className="text-neutral-300 font-medium">Save for later</span>
-                                    <SaveButton />
+                                    <SaveButton articleId={Number(article.id)} />
                                 </div>
                             </div>
                         </div>
