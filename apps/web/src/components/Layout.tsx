@@ -1,21 +1,40 @@
 import React from 'react';
-import Head from 'next/head';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import SEO from './SEO';
 
 interface LayoutProps {
     children: React.ReactNode;
     title?: string;
+    description?: string;
+    image?: string;
+    article?: boolean;
+    keywords?: string;
+    author?: string;
+    publishedAt?: string;
 }
 
-const Layout = ({ children, title = 'EduNews - Stay Ahead' }: LayoutProps) => {
+const Layout = ({
+    children,
+    title,
+    description,
+    image,
+    article,
+    keywords,
+    author,
+    publishedAt
+}: LayoutProps) => {
     return (
         <div className="min-h-screen bg-bg-dark font-sans text-neutral-100 selection:bg-accent-yellow/30 selection:text-accent-yellow overflow-x-hidden">
-            <Head>
-                <title>{title}</title>
-                <meta name="description" content="Real-time updates for scholarships, exams, admissions, results, and government education notifications." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+            <SEO
+                title={title}
+                description={description}
+                image={image}
+                article={article}
+                keywords={keywords}
+                author={author}
+                publishedAt={publishedAt}
+            />
 
             {/* Global Background Effects */}
             {/* Global Background Effects - GYPTO Theme */}

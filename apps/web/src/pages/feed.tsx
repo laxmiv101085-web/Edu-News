@@ -36,8 +36,16 @@ export default function Feed() {
     });
   }, [articles, activeCategory, searchQuery]);
 
+  const seoTitle = activeCategory === 'all'
+    ? 'Latest Education News & Updates'
+    : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} News - EduNews`;
+
   return (
-    <Layout title="News Feed - EduNews">
+    <Layout
+      title={seoTitle}
+      description={`Stay updated with the latest ${activeCategory === 'all' ? 'education' : activeCategory} news, exam results, and scholarship announcements in real-time.`}
+      keywords={`education news, ${activeCategory}, exam results, scholarships, india`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
           <div>

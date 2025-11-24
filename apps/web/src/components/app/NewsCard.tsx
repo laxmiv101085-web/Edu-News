@@ -38,7 +38,7 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
                     </span>
                 </div>
                 <div className="absolute top-4 right-4 z-20">
-                    <SaveButton />
+                    <SaveButton articleId={article.id} />
                 </div>
             </div>
 

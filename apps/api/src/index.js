@@ -140,6 +140,85 @@ app.get('/api/categories', async (req, res) => {
     }
 });
 
+// Authentication Middleware
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) return res.sendStatus(401);
+
+    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
+
+    import('jsonwebtoken').then(({ default: jwt }) => {
+        jwt.verify(token, JWT_SECRET, (err, user) => {
+            if (err) return res.sendStatus(403);
+            req.user = user;
+            next();
+        });
+    });
+};
+
+// ==================== BOOKMARK ROUTES ====================
+
+// Get saved articles
+app.get('/api/bookmarks', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const result = await pool.query(`
+            SELECT a.*, sa.saved_at 
+            FROM articles a
+            JOIN saved_articles sa ON a.id = sa.article_id
+            WHERE sa.user_id = $1
+            ORDER BY sa.saved_at DESC
+        `, [userId]);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching bookmarks:', error);
+        res.status(500).json({ error: 'Failed to fetch bookmarks' });
+    }
+});
+
+// Save article
+app.post('/api/bookmarks', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { articleId } = req.body;
+
+        if (!articleId) {
+            return res.status(400).json({ error: 'Article ID is required' });
+        }
+
+        await pool.query(
+            'INSERT INTO saved_articles (user_id, article_id) VALUES ($1, $2) ON CONFLICT (user_id, article_id) DO NOTHING',
+            [userId, articleId]
+        );
+
+        res.json({ message: 'Article saved successfully', articleId });
+    } catch (error) {
+        console.error('Error saving bookmark:', error);
+        res.status(500).json({ error: 'Failed to save bookmark' });
+    }
+});
+
+// Remove bookmark
+app.delete('/api/bookmarks/:articleId', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { articleId } = req.params;
+
+        await pool.query(
+            'DELETE FROM saved_articles WHERE user_id = $1 AND article_id = $2',
+            [userId, articleId]
+        );
+
+        res.json({ message: 'Bookmark removed successfully', articleId });
+    } catch (error) {
+        console.error('Error removing bookmark:', error);
+        res.status(500).json({ error: 'Failed to remove bookmark' });
+    }
+});
+
 // Trigger manual ingestion
 app.post('/api/admin/ingest', async (req, res) => {
     try {
