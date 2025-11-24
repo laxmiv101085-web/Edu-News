@@ -60,17 +60,31 @@ app.get('/api/feed', async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const category = req.query.category;
+        const search = req.query.search;
         const offset = (page - 1) * limit;
 
         let query = 'SELECT * FROM articles';
         let countQuery = 'SELECT COUNT(*) FROM articles';
         const params = [];
+        const conditions = [];
 
         // Filter by category if provided
         if (category && category !== 'all') {
-            query += ' WHERE category = $1';
-            countQuery += ' WHERE category = $1';
             params.push(category);
+            conditions.push(`category = $${params.length}`);
+        }
+
+        // Filter by search term if provided
+        if (search) {
+            params.push(`%${search}%`);
+            conditions.push(`(title ILIKE $${params.length} OR summary ILIKE $${params.length})`);
+        }
+
+        // Apply conditions
+        if (conditions.length > 0) {
+            const whereClause = ' WHERE ' + conditions.join(' AND ');
+            query += whereClause;
+            countQuery += whereClause;
         }
 
         // Get total count

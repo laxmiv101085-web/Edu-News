@@ -1,34 +1,67 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Article } from '../lib/news/types';
+import api from '../lib/api/client';
 
-export const useFeedStream = (initialArticles: Article[] = []) => {
+interface UseFeedProps {
+    category?: string;
+    search?: string;
+    initialArticles?: Article[];
+}
+
+export const useFeedStream = ({ category = 'all', search = '', initialArticles = [] }: UseFeedProps) => {
     const [articles, setArticles] = useState<Article[]>(initialArticles);
-    const [isConnected, setIsConnected] = useState(true); // Default to true since we're using REST
-    const [isLoading, setIsLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const fetchArticles = async () => {
+    const fetchArticles = useCallback(async (pageNum: number, isReset: boolean) => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-            const res = await fetch(`${apiUrl}/api/feed?limit=50`);
-            const data = await res.json();
+            setIsLoading(true);
+            setError(null);
 
-            if (data.items) {
-                setArticles(data.items);
+            const params = new URLSearchParams({
+                page: pageNum.toString(),
+                limit: '12',
+            });
+
+            if (category && category !== 'all') {
+                params.append('category', category);
             }
-        } catch (error) {
-            console.error('Error fetching articles:', error);
+
+            if (search) {
+                params.append('search', search);
+            }
+
+            const res = await api.get(`/api/feed?${params.toString()}`);
+            const newArticles = res.data.items;
+            const pagination = res.data.pagination;
+
+            setArticles(prev => isReset ? newArticles : [...prev, ...newArticles]);
+            setHasMore(pagination.page < pagination.totalPages);
+
+        } catch (err) {
+            console.error('Error fetching articles:', err);
+            setError('Failed to load articles');
         } finally {
             setIsLoading(false);
         }
+    }, [category, search]);
+
+    // Reset when filters change
+    useEffect(() => {
+        setPage(1);
+        setHasMore(true);
+        fetchArticles(1, true);
+    }, [fetchArticles]);
+
+    const loadMore = () => {
+        if (!isLoading && hasMore) {
+            const nextPage = page + 1;
+            setPage(nextPage);
+            fetchArticles(nextPage, false);
+        }
     };
 
-    useEffect(() => {
-        fetchArticles();
-
-        // Poll every minute for updates
-        const interval = setInterval(fetchArticles, 60000);
-        return () => clearInterval(interval);
-    }, []);
-
-    return { articles, setArticles, isConnected, isLoading };
+    return { articles, isLoading, hasMore, loadMore, error };
 };
