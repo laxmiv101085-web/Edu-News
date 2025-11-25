@@ -145,6 +145,41 @@ function cleanText(text, maxLength = 500) {
 }
 
 /**
+ * Check if content is education-related
+ */
+function isEducationalContent(title, content, summary) {
+    const text = (title + ' ' + content + ' ' + summary).toLowerCase();
+
+    // Education keywords that should be present
+    const educationKeywords = [
+        'exam', 'test', 'jee', 'neet', 'upsc', 'gate', 'cat', 'gmat', 'sat',
+        'scholarship', 'fellowship', 'student', 'admission', 'university',
+        'college', 'school', 'education', 'cbse', 'icse', 'board',
+        'result', 'score', 'rank', 'syllabus', 'curriculum',
+        'degree', 'course', 'class', 'teacher', 'learning',
+        'iit', 'nit', 'aiims', 'hostel', 'campus', 'academic',
+        'ugc', 'aicte', 'naac', 'coaching', 'tuition'
+    ];
+
+    // Non-education keywords that indicate general news
+    const excludeKeywords = [
+        'murder', 'rape', 'crime', 'arrested', 'killed',
+        'election', 'politics', 'minister', 'party',
+        'cricket', 'football', 'sports', 'match',
+        'bollywood', 'actor', 'actress', 'film',
+        'stock', 'market', 'shares', 'profit'
+    ];
+
+    // Check if any exclude keywords are present
+    const hasExcludedContent = excludeKeywords.some(keyword => text.includes(keyword));
+    if (hasExcludedContent) return false;
+
+    // Check if at least one education keyword is present
+    const hasEducationContent = educationKeywords.some(keyword => text.includes(keyword));
+    return hasEducationContent;
+}
+
+/**
  * Categorize article based on title and content
  */
 function categorizeArticle(title, content) {
@@ -224,6 +259,13 @@ async function processRssFeed(feed) {
 
             // Categorize
             article.category = categorizeArticle(article.title, article.content);
+
+            // Filter: Only process educational content
+            if (!isEducationalContent(article.title, article.content, article.summary)) {
+                console.log(`⊘ Skipping non-educational article: ${article.title.substring(0, 50)}...`);
+                skipped++;
+                continue;
+            }
 
             // Insert into database
             const result = await insertArticle(article);
@@ -372,6 +414,12 @@ async function ingestFromNewsAPI() {
 
                 // Categorize
                 article.category = categorizeArticle(article.title, article.content);
+
+                // Filter: Only process educational content
+                if (!isEducationalContent(article.title, article.content, article.summary)) {
+                    skipped++;
+                    continue;
+                }
 
                 // Insert into database
                 const result = await insertArticle(article);
