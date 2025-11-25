@@ -22,7 +22,7 @@ services:
       - key: CORS_ORIGIN
         value: https://edu-news-35vza0wnv-vickyrrrrrrs-projects.vercel.app
       - key: NEWS_SOURCES
-        value: "https://indianexpress.com/section/education/feed/,https://www.thehindu.com/education/feeder/default.rss,https://timesofindia.indiatimes.com/rssfeeds/913168846.cms,https://www.india.com/education/feed/,https://www.news18.com/rss/education.xml,https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml"
+        value: "https://indianexpress.com/section/education/feed/,https://www.thehindu.com/education/feeder/default.rss,https://timesofindia.indiatimes.com/rssfeeds/913168846.cms,https://www.india.com/education/feed/,https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml"
     plan: free
     region: oregon
     healthCheckPath: /health
