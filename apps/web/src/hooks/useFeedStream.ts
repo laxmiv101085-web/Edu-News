@@ -55,6 +55,17 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
         fetchArticles(1, true);
     }, [fetchArticles]);
 
+    // Auto-refresh every 60 seconds
+    useEffect(() => {
+        const refreshInterval = setInterval(() => {
+            console.log('🔄 Auto-refreshing feed...');
+            // When auto-refreshing, we want to fetch the first page and reset the articles
+            fetchArticles(1, true);
+        }, 60000); // 60 seconds
+
+        return () => clearInterval(refreshInterval);
+    }, [fetchArticles]);
+
     const loadMore = () => {
         if (!isLoading && hasMore) {
             const nextPage = page + 1;
