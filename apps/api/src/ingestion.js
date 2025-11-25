@@ -150,33 +150,42 @@ function cleanText(text, maxLength = 500) {
 function isEducationalContent(title, content, summary) {
     const text = (title + ' ' + content + ' ' + summary).toLowerCase();
 
-    // Education keywords that should be present
+    // Indian competitive exam keywords - MUST have at least one
+    const examKeywords = [
+        'jee', 'neet', 'upsc', 'gate', 'cat', 'clat', 'nda', 'cds',
+        'ssc', 'ibps', 'rrb', 'railway', 'banking', 'ias', 'ips',
+        'aiims', 'jipmer', 'comedk', 'viteee', 'bitsat', 'mht cet',
+        'kcet', 'ap eamcet', 'ts eamcet', 'wbjee', 'keam'
+    ];
+
+    // General education keywords
     const educationKeywords = [
-        'exam', 'test', 'jee', 'neet', 'upsc', 'gate', 'cat', 'gmat', 'sat',
-        'scholarship', 'fellowship', 'student', 'admission', 'university',
-        'college', 'school', 'education', 'cbse', 'icse', 'board',
-        'result', 'score', 'rank', 'syllabus', 'curriculum',
-        'degree', 'course', 'class', 'teacher', 'learning',
-        'iit', 'nit', 'aiims', 'hostel', 'campus', 'academic',
-        'ugc', 'aicte', 'naac', 'coaching', 'tuition'
+        'exam', 'test', 'entrance', 'admission', 'scholarship', 'fellowship',
+        'student', 'university', 'college', 'cbse', 'icse', 'board',
+        'result', 'cutoff', 'merit', 'rank', 'score', 'answer key',
+        'syllabus', 'curriculum', 'degree', 'course', 'iit', 'nit',
+        'counseling', 'registration', 'application', 'eligibility'
     ];
 
-    // Non-education keywords that indicate general news
+    // Non-education keywords that indicate general news - auto-reject
     const excludeKeywords = [
-        'murder', 'rape', 'crime', 'arrested', 'killed',
-        'election', 'politics', 'minister', 'party',
-        'cricket', 'football', 'sports', 'match',
-        'bollywood', 'actor', 'actress', 'film',
-        'stock', 'market', 'shares', 'profit'
+        'murder', 'rape', 'crime', 'arrested', 'killed', 'death',
+        'election', 'politics', 'minister', 'party', 'bjp', 'congress',
+        'cricket', 'football', 'sports', 'match', 'player',
+        'bollywood', 'actor', 'actress', 'film', 'movie',
+        'stock', 'market', 'shares', 'profit', 'business',
+        'weather', 'temperature', 'rain'
     ];
 
-    // Check if any exclude keywords are present
+    // Check if any exclude keywords are present - instant reject
     const hasExcludedContent = excludeKeywords.some(keyword => text.includes(keyword));
     if (hasExcludedContent) return false;
 
-    // Check if at least one education keyword is present
-    const hasEducationContent = educationKeywords.some(keyword => text.includes(keyword));
-    return hasEducationContent;
+    // Check if has exam keywords OR general education keywords
+    const hasExamKeyword = examKeywords.some(keyword => text.includes(keyword));
+    const hasEducationKeyword = educationKeywords.some(keyword => text.includes(keyword));
+
+    return hasExamKeyword || hasEducationKeyword;
 }
 
 /**

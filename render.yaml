@@ -22,7 +22,7 @@ services:
       - key: CORS_ORIGIN
         value: https://edu-news-35vza0wnv-vickyrrrrrrs-projects.vercel.app
       - key: NEWS_SOURCES
-        value: "https://indianexpress.com/section/education/feed/,https://www.universityworldnews.com/feed/,https://www.timeshighereducation.com/rss/feed,https://www.insidehighered.com/rss/feed,https://www.chronicle.com/rss/articles,https://hechingerreport.org/feed/,https://www.educationdive.com/rss/,https://www.edsurge.com/news.rss,https://www.eschoolnews.com/feed/,https://www.educationnext.org/feed/,https://www.thehindu.com/education/feeder/default.rss,https://timesofindia.indiatimes.com/rssfeeds/913168846.cms,https://www.bbc.co.uk/news/education/rss.xml,https://www.theguardian.com/education/rss,https://www.independent.co.uk/topic/education/rss,https://www.telegraph.co.uk/education/rss.xml,https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/learning/rss.xml,https://www.washingtonpost.com/blogs/answer-sheet/feed/,http://rss.cnn.com/rss/cnn_education.rss,https://www.campusexpress.org/feed/,https://www.studyinternational.com/feed/,https://www.topuniversities.com/rss.xml,https://www.edweek.org/feed/,https://www.studyabroadguide.com/feed/"
+        value: "https://indianexpress.com/section/education/feed/,https://www.thehindu.com/education/feeder/default.rss,https://timesofindia.indiatimes.com/rssfeeds/913168846.cms,https://www.india.com/education/feed/,https://www.news18.com/rss/education.xml,https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml"
     plan: free
     region: oregon
     healthCheckPath: /health
