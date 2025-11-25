@@ -194,17 +194,30 @@ function isEducationalContent(title, content, summary) {
 function categorizeArticle(title, content) {
     const text = (title + ' ' + content).toLowerCase();
 
-    if (text.match(/\b(exam|test|jee|neet|upsc|gate|cat|gmat)\b/)) {
-        return 'exam';
+    // Exams - Registration, dates, patterns, syllabus
+    if (text.match(/\b(jee|neet|upsc|gate|cat|clat|nda|cds|ssc|ibps|rrb|railway)\b/i) &&
+        text.match(/\b(registration|exam|test|admit card|hall ticket|pattern|syllabus|schedule|date|application)\b/i)) {
+        return 'exams';
     }
-    if (text.match(/\b(scholarship|grant|fellowship|stipend)\b/)) {
-        return 'scholarship';
+
+    // Results - Cutoffs, merit lists, answer keys, marks
+    if (text.match(/\b(result|cutoff|cut off|merit|rank|topper|marks|answer key|scorecard|qualifying)\b/i)) {
+        return 'results';
     }
-    if (text.match(/\b(result|score|marks|rank)\b/)) {
-        return 'result';
+
+    // Scholarships - Financial aid, fellowships
+    if (text.match(/\b(scholarship|fellowship|grant|stipend|financial aid|award)\b/i)) {
+        return 'scholarships';
     }
-    if (text.match(/\b(admission|enrollment|application)\b/)) {
-        return 'admission';
+
+    // Admissions - College admissions, counseling, seat allotment
+    if (text.match(/\b(admission|admissions|counseling|counselling|seat allotment|application|apply|enrollment)\b/i)) {
+        return 'admissions';
+    }
+
+    // Policy - Government decisions, new rules
+    if (text.match(/\b(policy|government|ministry|ugc|aicte|rule|regulation|announcement)\b/i)) {
+        return 'policy';
     }
 
     return 'general';
