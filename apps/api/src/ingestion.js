@@ -150,42 +150,30 @@ function cleanText(text, maxLength = 500) {
 function isEducationalContent(title, content, summary) {
     const text = (title + ' ' + content + ' ' + summary).toLowerCase();
 
-    // Indian competitive exam keywords - MUST have at least one
-    const examKeywords = [
-        'jee', 'neet', 'upsc', 'gate', 'cat', 'clat', 'nda', 'cds',
-        'ssc', 'ibps', 'rrb', 'railway', 'banking', 'ias', 'ips',
-        'aiims', 'jipmer', 'comedk', 'viteee', 'bitsat', 'mht cet',
-        'kcet', 'ap eamcet', 'ts eamcet', 'wbjee', 'keam'
-    ];
-
-    // General education keywords
+    // Must have education-related keywords
     const educationKeywords = [
-        'exam', 'test', 'entrance', 'admission', 'scholarship', 'fellowship',
-        'student', 'university', 'college', 'cbse', 'icse', 'board',
-        'result', 'cutoff', 'merit', 'rank', 'score', 'answer key',
-        'syllabus', 'curriculum', 'degree', 'course', 'iit', 'nit',
-        'counseling', 'registration', 'application', 'eligibility'
+        'education', 'school', 'college', 'university', 'student',
+        'exam', 'test', 'jee', 'neet', 'upsc', 'gate', 'cat',
+        'admission', 'scholarship', 'result', 'cutoff', 'merit',
+        'cbse', 'icse', 'board', 'iit', 'nit', 'aiims',
+        'registration', 'counseling', 'syllabus', 'course',
+        'degree', 'diploma', 'coaching', 'academic', 'learning'
     ];
 
-    // Non-education keywords that indicate general news - auto-reject
+    // Definitely NOT education - auto-reject
     const excludeKeywords = [
-        'murder', 'rape', 'crime', 'arrested', 'killed', 'death',
-        'election', 'politics', 'minister', 'party', 'bjp', 'congress',
-        'cricket', 'football', 'sports', 'match', 'player',
-        'bollywood', 'actor', 'actress', 'film', 'movie',
-        'stock', 'market', 'shares', 'profit', 'business',
-        'weather', 'temperature', 'rain'
+        'murder', 'rape', 'killed', 'arrested', 'crime',
+        'cricket', 'football', 'bollywood', 'actor',
+        'stock market', 'shares', 'profit'
     ];
 
-    // Check if any exclude keywords are present - instant reject
-    const hasExcludedContent = excludeKeywords.some(keyword => text.includes(keyword));
-    if (hasExcludedContent) return false;
+    // Check for exclude keywords first
+    const hasExcluded = excludeKeywords.some(keyword => text.includes(keyword));
+    if (hasExcluded) return false;
 
-    // Check if has exam keywords OR general education keywords
-    const hasExamKeyword = examKeywords.some(keyword => text.includes(keyword));
-    const hasEducationKeyword = educationKeywords.some(keyword => text.includes(keyword));
-
-    return hasExamKeyword || hasEducationKeyword;
+    // Accept if has any education keyword
+    const hasEducation = educationKeywords.some(keyword => text.includes(keyword));
+    return hasEducation;
 }
 
 /**
