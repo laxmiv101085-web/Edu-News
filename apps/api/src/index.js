@@ -248,6 +248,50 @@ app.use('/api/admin/ingest', async (req, res) => {
     }
 });
 
+// Clean non-educational articles from database
+app.post('/api/admin/cleanup', async (req, res) => {
+    try {
+        console.log('🧹 Cleaning non-educational articles...');
+
+        // Education keywords
+        const eduKeywords = [
+            'exam', 'test', 'jee', 'neet', 'upsc', 'gate', 'cat', 'gmat', 'sat',
+            'scholarship', 'fellowship', 'student', 'admission', 'university',
+            'college', 'school', 'education', 'cbse', 'icse', 'board',
+            'result', 'score', 'rank', 'syllabus', 'curriculum',
+            'degree', 'course', 'class', 'teacher', 'learning',
+            'iit', 'nit', 'aiims', 'hostel', 'campus', 'academic'
+        ];
+
+        // Get all articles
+        const allArticles = await pool.query('SELECT id, title, content, summary FROM articles');
+        let deleted = 0;
+
+        for (const article of allArticles.rows) {
+            const text = (article.title + ' ' + (article.content || '') + ' ' + (article.summary || '')).toLowerCase();
+
+            // Check if contains any education keyword
+            const hasEduKeyword = eduKeywords.some(keyword => text.includes(keyword));
+
+            if (!hasEduKeyword) {
+                await pool.query('DELETE FROM articles WHERE id = $1', [article.id]);
+                deleted++;
+                console.log(`🗑️  Deleted: ${article.title.substring(0, 50)}...`);
+            }
+        }
+
+        res.json({
+            success: true,
+            deleted,
+            message: `Cleaned ${deleted} non-educational articles`
+        });
+    } catch (error) {
+        console.error('Error cleaning database:', error);
+        res.status(500).json({ error: 'Cleanup failed', message: error.message });
+    }
+});
+
+
 // Get database stats
 app.get('/api/stats', async (req, res) => {
     try {
