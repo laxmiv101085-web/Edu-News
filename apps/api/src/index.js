@@ -34,6 +34,23 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Health check and root routes
+app.get('/', (req, res) => {
+    res.json({
+        status: 'ok',
+        message: 'Edu News API is running',
+        endpoints: ['/api/feed', '/api/health', '/api/admin/ingest']
+    });
+});
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 // Request logging
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
