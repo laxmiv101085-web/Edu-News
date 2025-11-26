@@ -172,21 +172,60 @@ app.get('/api/categories', async (req, res) => {
 });
 
 // Authentication Middleware
-const authenticateToken = (req, res, next) => {
+import admin from 'firebase-admin';
+
+// Initialize Firebase Admin
+if (!admin.apps.length) {
+    try {
+        // In production (Render), use environment variables
+        if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+            const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+            console.log('🔥 Firebase Admin initialized with service account');
+        } else {
+            // Fallback for development or if env var is missing (might fail in prod if not set)
+            admin.initializeApp();
+            console.log('⚠️ Firebase Admin initialized without explicit credentials (default)');
+        }
+    } catch (error) {
+        console.error('❌ Firebase Admin initialization failed:', error);
+    }
+}
+
+// Authentication Middleware
+const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) return res.sendStatus(401);
 
-    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
+    try {
+        // 1. Try verifying as Firebase ID Token
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        req.user = {
+            userId: decodedToken.uid,
+            email: decodedToken.email,
+            name: decodedToken.name || decodedToken.email?.split('@')[0],
+            firebase: true
+        };
+        return next();
+    } catch (firebaseError) {
+        // 2. Fallback: Try verifying as custom JWT (Legacy/Local)
+        const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
-    import('jsonwebtoken').then(({ default: jwt }) => {
-        jwt.verify(token, JWT_SECRET, (err, user) => {
-            if (err) return res.sendStatus(403);
-            req.user = user;
-            next();
+        import('jsonwebtoken').then(({ default: jwt }) => {
+            jwt.verify(token, JWT_SECRET, (err, user) => {
+                if (err) {
+                    console.error('Auth failed:', firebaseError.message, 'and', err.message);
+                    return res.sendStatus(403);
+                }
+                req.user = user;
+                next();
+            });
         });
-    });
+    }
 };
 
 // ==================== BOOKMARK ROUTES ====================
