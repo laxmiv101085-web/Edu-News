@@ -145,35 +145,41 @@ function cleanText(text, maxLength = 500) {
 }
 
 /**
- * Check if content is education-related
+ * Check if content is education-related (STRICT - Indian exams only)
  */
 function isEducationalContent(title, content, summary) {
     const text = (title + ' ' + content + ' ' + summary).toLowerCase();
 
-    // Must have education-related keywords
-    const educationKeywords = [
-        'education', 'school', 'college', 'university', 'student',
-        'exam', 'test', 'jee', 'neet', 'upsc', 'gate', 'cat',
-        'admission', 'scholarship', 'result', 'cutoff', 'merit',
-        'cbse', 'icse', 'board', 'iit', 'nit', 'aiims',
-        'registration', 'counseling', 'syllabus', 'course',
-        'degree', 'diploma', 'coaching', 'academic', 'learning'
+    // MUST have at least one of these Indian exam/education keywords
+    const requiredKeywords = [
+        'jee', 'neet', 'upsc', 'ssc', 'ibps', 'gate', 'cat', 'clat',
+        'nda', 'cds', 'railway', 'rrb', 'banking exam', 'cbse', 'icse',
+        'iit', 'nit', 'aiims', 'board exam', 'class 10', 'class 12',
+        'entrance exam', 'cutoff', 'merit list', 'answer key', 'admit card',
+        'nta', 'csir', 'ugc net', 'jee main', 'jee advanced', 'neet ug',
+        'admission', 'counseling', 'seat allotment', 'scholarship india'
     ];
 
-    // Definitely NOT education - auto-reject
-    const excludeKeywords = [
-        'murder', 'rape', 'killed', 'arrested', 'crime',
-        'cricket', 'football', 'bollywood', 'actor',
-        'stock market', 'shares', 'profit'
+    // Auto-reject if contains these
+    const rejectKeywords = [
+        'kardashian', 'celebrity', 'bollywood', 'actor', 'actress',
+        'cricket', 'football', 'sports', 'match', 'player',
+        'murder', 'rape', 'crime', 'arrested', 'killed',
+        'trump', 'biden', 'election', 'minister', 'politics',
+        'stock', 'market', 'investment', 'kkr', 'venture',
+        'tourism', 'travel', 'hotel', 'restaurant',
+        'webster university', 'us university', 'american college',
+        'cybersecurity', 'hacking', 'malware', 'breach',
+        'karabuk', 'cultural journey', 'loan limits', 'health programs'
     ];
 
-    // Check for exclude keywords first
-    const hasExcluded = excludeKeywords.some(keyword => text.includes(keyword));
-    if (hasExcluded) return false;
+    // Instant reject
+    const hasReject = rejectKeywords.some(keyword => text.includes(keyword));
+    if (hasReject) return false;
 
-    // Accept if has any education keyword
-    const hasEducation = educationKeywords.some(keyword => text.includes(keyword));
-    return hasEducation;
+    // MUST have at least one required keyword
+    const hasRequired = requiredKeywords.some(keyword => text.includes(keyword));
+    return hasRequired;
 }
 
 /**
@@ -383,9 +389,13 @@ async function insertArticle(article) {
 }
 
 /**
- * Ingest from NewsAPI.org
+ * Ingest from NewsAPI.org (DISABLED - too much garbage)
  */
 async function ingestFromNewsAPI() {
+    // DISABLED: NewsAPI returns too much irrelevant global content
+    // Only using RSS feeds and YouTube now
+    return { success: true, inserted: 0, skipped: 0, message: 'NewsAPI disabled' };
+
     const apiKey = process.env.NEWS_API_KEY;
     if (!apiKey) return { success: false, message: 'No NEWS_API_KEY configured' };
 
