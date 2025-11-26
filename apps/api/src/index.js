@@ -185,9 +185,11 @@ if (!admin.apps.length) {
             });
             console.log('🔥 Firebase Admin initialized with service account');
         } else {
-            // Fallback for development or if env var is missing (might fail in prod if not set)
-            admin.initializeApp();
-            console.log('⚠️ Firebase Admin initialized without explicit credentials (default)');
+            // Fallback: Initialize with Project ID (sufficient for token verification)
+            admin.initializeApp({
+                projectId: 'vibe-eda-circuits'
+            });
+            console.log('⚠️ Firebase Admin initialized with Project ID only');
         }
     } catch (error) {
         console.error('❌ Firebase Admin initialization failed:', error);
