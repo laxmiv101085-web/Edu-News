@@ -417,10 +417,12 @@ async function ingestFromNewsAPI() {
 
         // Block non-educational sources
         const blockedSources = [
-            'biztoc', 'bleeping computer', 'globe newswire', 'globenewswire',
-            'the cut', 'notebookcheck', 'notebook check', 'techcrunch',
-            'venturebeat', 'business insider', 'forbes', 'bloomberg',
-            'cnbc', 'reuters', 'associated press', 'yahoo'
+            'biztoc', 'bleeping computer', 'slashdot', 'the star', 'dou',
+            'globe newswire', 'globenewswire', 'the cut', 'notebookcheck',
+            'techcrunch', 'venturebeat', 'business insider', 'forbes',
+            'bloomberg', 'cnbc', 'reuters', 'associated press', 'yahoo',
+            'ars technica', 'wired', 'engadget', 'the verge', 'gizmodo',
+            'mashable', 'cnet', 'zdnet', 'techradar', 'android authority'
         ];
 
         for (const item of articles) {
