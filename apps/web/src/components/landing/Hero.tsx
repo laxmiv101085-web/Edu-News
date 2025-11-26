@@ -25,9 +25,23 @@ const Hero = () => {
     const fetchTopNews = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/api/feed?limit=5');
+            // Fetch more articles to filter through
+            const response = await fetch('/api/feed?limit=100');
             const data = await response.json();
-            setTopNews(data.items || []);
+
+            // Filter for exam-related keywords
+            const examKeywords = ['jee', 'neet', 'upsc', 'ssc', 'ibps', 'gate', 'cat', 'clat',
+                'nda', 'cds', 'railway', 'rrb', 'banking', 'ias', 'ips',
+                'exam', 'test', 'entrance', 'cutoff', 'result', 'answer key',
+                'admit card', 'registration', 'counseling'];
+
+            const examArticles = (data.items || []).filter((article: Article) => {
+                const text = (article.title + ' ' + article.summary).toLowerCase();
+                return examKeywords.some(keyword => text.includes(keyword));
+            });
+
+            // Get top 50 exam-related articles
+            setTopNews(examArticles.slice(0, 50));
         } catch (error) {
             console.error('Failed to fetch top news:', error);
         } finally {
@@ -164,7 +178,10 @@ const Hero = () => {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-white">📰 Top Educational News</h2>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-white">🎯 Top 50 Exam Updates</h2>
+                                    <p className="text-sm text-neutral-400 mt-1">JEE, NEET, UPSC, SSC, IBPS & More</p>
+                                </div>
                                 <button
                                     onClick={() => setShowModal(false)}
                                     className="p-2 hover:bg-white/10 rounded-full transition-colors"
