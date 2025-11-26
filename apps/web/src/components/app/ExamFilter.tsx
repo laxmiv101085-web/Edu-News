@@ -27,9 +27,9 @@ const ExamFilter = ({ onFilterChange, currentFilter }: ExamFilterProps) => {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 bg-accent-yellow/10 border-2 border-accent-yellow/50 rounded-xl text-accent-yellow font-semibold hover:bg-accent-yellow/20 transition-colors shadow-lg"
             >
-                <span className="text-sm font-medium">{currentLabel}</span>
+                <span className="text-sm">{currentLabel}</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
