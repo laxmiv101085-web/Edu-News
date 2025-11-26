@@ -6,7 +6,7 @@ import SaveButton from './SaveButton';
 import ShareButton from './ShareButton';
 import { Article } from '../../lib/news/types';
 import { formatDistanceToNow } from 'date-fns';
-import { formatReadingTime, getWhatsAppShareUrl, getTwitterShareUrl, getTelegramShareUrl } from '../../lib/utils/shareUtils';
+import { getWhatsAppShareUrl, getTwitterShareUrl, getTelegramShareUrl } from '../../lib/utils/shareUtils';
 
 interface NewsCardProps {
     article: Article;
@@ -64,12 +64,7 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
                     <span className="px-3 py-1 rounded-full text-xs font-medium bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
                         {article.category}
                     </span>
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs text-neutral-500">
-                            {formatReadingTime(article.content || article.summary)}
-                        </span>
-                        <SaveButton articleId={Number(article.id)} />
-                    </div>
+                    <SaveButton articleId={Number(article.id)} />
                 </div>
 
                 <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-accent-yellow transition-colors">
