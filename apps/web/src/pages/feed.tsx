@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Layout from '../components/Layout';
 import NewsCard from '../components/app/NewsCard';
 import CategoryFilters from '../components/app/CategoryFilters';
 import SearchBar from '../components/app/SearchBar';
+import ExamFilter from '../components/app/ExamFilter';
 import { Filter, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useFeedStream } from '../hooks/useFeedStream';
@@ -13,6 +14,7 @@ export default function Feed() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [examFilter, setExamFilter] = useState('all');
 
   // Debounce search
   useEffect(() => {
@@ -38,6 +40,16 @@ export default function Feed() {
     search: debouncedSearch
   });
 
+  // Client-side exam filtering
+  const filteredArticles = useMemo(() => {
+    if (examFilter === 'all') return articles;
+
+    return articles.filter(article => {
+      const text = (article.title + ' ' + article.summary).toLowerCase();
+      return text.includes(examFilter.toLowerCase());
+    });
+  }, [articles, examFilter]);
+
   const seoTitle = activeCategory === 'all'
     ? 'Latest Education News & Updates'
     : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} News - EduNews`;
@@ -59,12 +71,15 @@ export default function Feed() {
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </div>
 
-        <div className="flex items-center gap-4 mb-8 overflow-x-auto pb-2">
-          <div className="flex items-center text-neutral-400 text-sm font-medium">
-            <Filter className="w-4 h-4 mr-2" />
-            Filters:
+        <div className="flex items-center justify-between gap-4 mb-8 overflow-x-auto pb-2">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center text-neutral-400 text-sm font-medium">
+              <Filter className="w-4 h-4 mr-2" />
+              Filters:
+            </div>
+            <CategoryFilters activeCategory={activeCategory} onSelectCategory={setActiveCategory} />
           </div>
-          <CategoryFilters activeCategory={activeCategory} onSelectCategory={setActiveCategory} />
+          <ExamFilter onFilterChange={setExamFilter} currentFilter={examFilter} />
         </div>
 
         {error && (
@@ -73,10 +88,10 @@ export default function Feed() {
           </div>
         )}
 
-        {articles.length > 0 ? (
+        {filteredArticles.length > 0 ? (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {articles.map((article, index) => (
+              {filteredArticles.map((article, index) => (
                 <NewsCard key={`${article.id}-${index}`} article={article} index={index} />
               ))}
             </div>

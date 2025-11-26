@@ -6,6 +6,7 @@ import SaveButton from './SaveButton';
 import ShareButton from './ShareButton';
 import { Article } from '../../lib/news/types';
 import { formatDistanceToNow } from 'date-fns';
+import { formatReadingTime, getWhatsAppShareUrl, getTwitterShareUrl, getTelegramShareUrl } from '../../lib/utils/shareUtils';
 
 interface NewsCardProps {
     article: Article;
@@ -58,23 +59,77 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
                 </div>
             </div>
 
-            <div className="p-6 flex-1 flex flex-col">
-                <div className="flex items-center text-neutral-400 text-xs mb-3">
-                    <Calendar className="w-3 h-3 mr-2" />
-                    {dateDisplay} • {article.source.name}
+            <div className="p-5 flex flex-col flex-1 relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
+                        {article.category}
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-neutral-500">
+                            {formatReadingTime(article.content || article.summary)}
+                        </span>
+                        <SaveButton articleId={Number(article.id)} />
+                    </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-accent-yellow transition-colors">
+                <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-accent-yellow transition-colors">
                     {article.title}
                 </h3>
 
-                <p className="text-neutral-400 text-sm line-clamp-2 mb-6 flex-1">
+                <p className="text-neutral-400 text-sm line-clamp-3 mb-4 flex-1">
                     {article.summary}
                 </p>
 
-                <div className="flex items-center text-accent-cyan text-sm font-medium group/link">
-                    Read Article
-                    <ArrowUpRight className="w-4 h-4 ml-1 transform group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                <div className="flex items-center justify-between text-xs text-neutral-500">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {dateDisplay}
+                        </div>
+                        <span className="truncate max-w-[150px]" title={typeof article.source === 'string' ? article.source : article.source?.name}>
+                            {typeof article.source === 'string' ? article.source : article.source?.name}
+                        </span>
+                    </div>
+
+                    {/* Share Buttons */}
+                    <div className="flex items-center gap-2 z-20">
+                        <a
+                            href={getWhatsAppShareUrl(article.title, article.url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 hover:bg-green-500/20 rounded-full transition-colors"
+                            title="Share on WhatsApp"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                            </svg>
+                        </a>
+                        <a
+                            href={getTwitterShareUrl(article.title, article.url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 hover:bg-blue-500/20 rounded-full transition-colors"
+                            title="Share on Twitter"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                            </svg>
+                        </a>
+                        <a
+                            href={getTelegramShareUrl(article.title, article.url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 hover:bg-blue-400/20 rounded-full transition-colors"
+                            title="Share on Telegram"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <svg className="w-4 h-4 text-blue-300" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                            </svg>
+                        </a>
+                    </div>
                 </div>
             </div>
         </motion.div>
