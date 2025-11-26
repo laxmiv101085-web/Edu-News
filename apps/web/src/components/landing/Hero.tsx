@@ -1,12 +1,45 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
-import { ArrowRight, Download } from 'lucide-react';
+import { ArrowRight, Download, X } from 'lucide-react';
+import Link from 'next/link';
 
 import { useAuth } from '../../hooks/useAuth';
 
+interface Article {
+    id: string;
+    title: string;
+    summary: string;
+    category: string;
+    published_at: string;
+    url: string;
+    image_url?: string;
+}
+
 const Hero = () => {
     const { user } = useAuth();
+    const [showModal, setShowModal] = useState(false);
+    const [topNews, setTopNews] = useState<Article[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    const fetchTopNews = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch('/api/feed?limit=5');
+            const data = await response.json();
+            setTopNews(data.items || []);
+        } catch (error) {
+            console.error('Failed to fetch top news:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGetUpdates = () => {
+        setShowModal(true);
+        fetchTopNews();
+    };
+
     return (
         <section className="relative pt-20 pb-32 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -44,7 +77,7 @@ const Hero = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Button size="lg" icon={<ArrowRight className="w-5 h-5" />}>
+                            <Button size="lg" icon={<ArrowRight className="w-5 h-5" />} onClick={handleGetUpdates}>
                                 Get Updates
                             </Button>
                             <Button variant="secondary" size="lg" icon={<Download className="w-5 h-5" />}>
@@ -112,6 +145,79 @@ const Hero = () => {
                     </motion.div>
                 </div>
             </div>
+
+            {/* Top News Modal */}
+            <AnimatePresence>
+                {showModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-bg-dark border border-white/10 rounded-3xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold text-white">📰 Top Educational News</h2>
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                >
+                                    <X className="w-6 h-6 text-neutral-400" />
+                                </button>
+                            </div>
+
+                            {loading ? (
+                                <div className="flex justify-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-yellow"></div>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {topNews.map((article, index) => (
+                                        <a
+                                            key={article.id}
+                                            href={article.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
+                                        >
+                                            <div className="flex gap-4">
+                                                <div className="flex-shrink-0 w-12 h-12 bg-accent-yellow/20 rounded-lg flex items-center justify-center text-2xl font-bold text-accent-yellow">
+                                                    {index + 1}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="px-2 py-1 rounded-md bg-accent-cyan/20 text-accent-cyan text-xs font-medium">
+                                                            {article.category}
+                                                        </span>
+                                                        <span className="text-xs text-neutral-500">
+                                                            {new Date(article.published_at).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                    <h3 className="text-white font-semibold mb-2 line-clamp-2">{article.title}</h3>
+                                                    <p className="text-neutral-400 text-sm line-clamp-2">{article.summary}</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    ))}
+
+                                    <Link href="/feed">
+                                        <button className="w-full mt-4 px-6 py-3 bg-accent-yellow text-bg-dark font-semibold rounded-xl hover:bg-accent-yellow/90 transition-colors">
+                                            View All News →
+                                        </button>
+                                    </Link>
+                                </div>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 };
