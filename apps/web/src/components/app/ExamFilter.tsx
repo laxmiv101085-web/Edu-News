@@ -36,10 +36,10 @@ const ExamFilter = ({ onFilterChange, currentFilter }: ExamFilterProps) => {
             {isOpen && (
                 <>
                     <div
-                        className="fixed inset-0 z-40"
+                        className="fixed inset-0 z-[998]"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute top-full mt-2 right-0 w-48 bg-bg-dark border border-white/10 rounded-xl overflow-hidden z-50 shadow-glass">
+                    <div className="absolute top-full mt-2 right-0 w-48 bg-bg-dark border border-white/10 rounded-xl overflow-hidden z-[999] shadow-glass">
                         {examTypes.map((exam) => (
                             <button
                                 key={exam.id}
