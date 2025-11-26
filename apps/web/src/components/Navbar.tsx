@@ -5,11 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Bell, User } from 'lucide-react';
 import clsx from 'clsx';
 import { AuthButton } from './auth/AuthButton';
+import { UserProfileDropdown } from './app/UserProfileDropdown';
+import { useAuth } from '../hooks/useAuth';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const router = useRouter();
+    const { user, loading } = useAuth();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -65,11 +68,9 @@ const Navbar = () => {
 
                         {/* Actions */}
                         <div className="hidden md:flex items-center space-x-4">
-                            <button className="p-2 text-neutral-400 hover:text-white transition-colors relative group">
-                                <Bell className="w-5 h-5" />
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-accent-yellow rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </button>
-                            <AuthButton />
+                            {!loading && (
+                                user ? <UserProfileDropdown /> : <AuthButton />
+                            )}
                         </div>
 
                         {/* Mobile Menu Button */}
@@ -104,7 +105,9 @@ const Navbar = () => {
                                 </Link>
                             ))}
                             <div className="pt-8 border-t border-white/10">
-                                <AuthButton />
+                                {!loading && (
+                                    user ? <UserProfileDropdown /> : <AuthButton />
+                                )}
                             </div>
                         </div>
                     </motion.div>

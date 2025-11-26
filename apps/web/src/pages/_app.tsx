@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider } from "@/components/feedback/ToastProvider";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { AuthProvider } from '../contexts/AuthContext';
+import { NotificationProvider } from '../contexts/NotificationContext';
 
 const queryClient = new QueryClient();
 
@@ -28,10 +29,14 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <ToastProvider>
-          {/* IMPORTANT: ToastProvider has exactly ONE child */}
-          <Component {...pageProps} />
-        </ToastProvider>
+        <AuthProvider>
+          <NotificationProvider>
+            <ToastProvider>
+              {/* IMPORTANT: ToastProvider has exactly ONE child */}
+              <Component {...pageProps} />
+            </ToastProvider>
+          </NotificationProvider>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

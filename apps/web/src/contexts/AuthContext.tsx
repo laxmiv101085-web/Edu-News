@@ -1,131 +1,150 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+import {
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged,
+    updateProfile,
+    signInWithPopup,
+    GoogleAuthProvider,
+    User as FirebaseUser
+} from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
-    created_at: string;
+    firebaseUid: string;
 }
 
 interface AuthContextType {
     user: User | null;
+    firebaseUser: FirebaseUser | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<void>;
     register: (name: string, email: string, password: string) => Promise<void>;
-    logout: () => void;
+    signInWithGoogle: () => Promise<void>;
+    logout: () => Promise<void>;
     error: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
+    firebaseUser: null,
     loading: true,
     login: async () => { },
     register: async () => { },
-    logout: () => { },
+    signInWithGoogle: async () => { },
+    logout: async () => { },
     error: null,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Check if user is logged in on mount
+    // Listen to Firebase auth state changes
     useEffect(() => {
-        const checkAuth = async () => {
-            const token = localStorage.getItem('auth_token');
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            setFirebaseUser(firebaseUser);
 
-            if (!token) {
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/api/auth/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+            if (firebaseUser) {
+                // User is signed in - set user data from Firebase
+                setUser({
+                    id: firebaseUser.uid,
+                    name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+                    email: firebaseUser.email || '',
+                    firebaseUid: firebaseUser.uid
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setUser(data.user);
-                } else {
-                    // Token invalid, clear it
-                    localStorage.removeItem('auth_token');
-                }
-            } catch (error) {
-                console.error('Auth check error:', error);
-                localStorage.removeItem('auth_token');
-            } finally {
-                setLoading(false);
+                // Store token for potential API calls
+                firebaseUser.getIdToken().then(token => {
+                    localStorage.setItem('firebase_token', token);
+                });
+            } else {
+                // User is signed out
+                localStorage.removeItem('firebase_token');
+                setUser(null);
             }
-        };
 
-        checkAuth();
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const login = async (email: string, password: string) => {
         setError(null);
         try {
-            const response = await fetch(`${API_URL}/api/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
-            }
-
-            // Store token
-            localStorage.setItem('auth_token', data.token);
-            setUser(data.user);
+            await signInWithEmailAndPassword(auth, email, password);
+            // onAuthStateChanged will handle setting the user
         } catch (error: any) {
-            setError(error.message);
-            throw error;
+            const errorMessage = error.code === 'auth/invalid-credential'
+                ? 'Invalid email or password'
+                : error.code === 'auth/user-not-found'
+                    ? 'No account found with this email'
+                    : error.code === 'auth/wrong-password'
+                        ? 'Incorrect password'
+                        : error.message || 'Login failed';
+            setError(errorMessage);
+            throw new Error(errorMessage);
         }
     };
 
     const register = async (name: string, email: string, password: string) => {
         setError(null);
         try {
-            const response = await fetch(`${API_URL}/api/auth/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, email, password }),
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+            // Update display name
+            await updateProfile(userCredential.user, {
+                displayName: name
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Registration failed');
-            }
-
-            // Store token
-            localStorage.setItem('auth_token', data.token);
-            setUser(data.user);
+            // onAuthStateChanged will handle setting the user
         } catch (error: any) {
-            setError(error.message);
+            const errorMessage = error.code === 'auth/email-already-in-use'
+                ? 'An account with this email already exists'
+                : error.code === 'auth/weak-password'
+                    ? 'Password should be at least 6 characters'
+                    : error.code === 'auth/invalid-email'
+                        ? 'Invalid email address'
+                        : error.message || 'Registration failed';
+            setError(errorMessage);
+            throw new Error(errorMessage);
+        }
+    };
+
+    const signInWithGoogle = async () => {
+        setError(null);
+        try {
+            const provider = new GoogleAuthProvider();
+            await signInWithPopup(auth, provider);
+            // onAuthStateChanged will handle setting the user
+        } catch (error: any) {
+            console.error('Google sign in error:', error);
+            setError(error.message || 'Google sign in failed');
             throw error;
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem('auth_token');
-        setUser(null);
+    const logout = async () => {
+        try {
+            await signOut(auth);
+            localStorage.removeItem('firebase_token');
+            setUser(null);
+            setFirebaseUser(null);
+        } catch (error: any) {
+            console.error('Logout error:', error);
+            setError(error.message);
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, error }}>
+        <AuthContext.Provider value={{ user, firebaseUser, loading, login, register, signInWithGoogle, logout, error }}>
             {children}
         </AuthContext.Provider>
     );

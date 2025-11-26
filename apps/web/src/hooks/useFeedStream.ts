@@ -15,7 +15,14 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Ref to track the current active request to prevent race conditions
+    const activeRequestRef = useState<{ id: string }>({ id: '' })[0];
+
     const fetchArticles = useCallback(async (pageNum: number, isReset: boolean) => {
+        // Generate a unique ID for this request
+        const requestId = `${category}-${search}-${pageNum}-${Date.now()}`;
+        activeRequestRef.id = requestId;
+
         try {
             setIsLoading(true);
             setError(null);
@@ -34,19 +41,29 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
             }
 
             const res = await api.get(`/api/feed?${params.toString()}`);
-            const newArticles = res.data.items;
-            const pagination = res.data.pagination;
 
-            setArticles(prev => isReset ? newArticles : [...prev, ...newArticles]);
-            setHasMore(pagination.page < pagination.totalPages);
+            // Only update state if this is still the active request
+            if (activeRequestRef.id === requestId) {
+                const newArticles = res.data.items;
+                const pagination = res.data.pagination;
+
+                setArticles(prev => isReset ? newArticles : [...prev, ...newArticles]);
+                setHasMore(pagination.page < pagination.totalPages);
+            }
 
         } catch (err) {
-            console.error('Error fetching articles:', err);
-            setError('Failed to load articles');
+            // Only update error if this is still the active request
+            if (activeRequestRef.id === requestId) {
+                console.error('Error fetching articles:', err);
+                setError('Failed to load articles');
+            }
         } finally {
-            setIsLoading(false);
+            // Only turn off loading if this is still the active request
+            if (activeRequestRef.id === requestId) {
+                setIsLoading(false);
+            }
         }
-    }, [category, search]);
+    }, [category, search, activeRequestRef]);
 
     // Reset when filters change
     useEffect(() => {

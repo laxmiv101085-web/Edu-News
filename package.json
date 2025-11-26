@@ -7,9 +7,11 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev:web",
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\" --names \"WEB,API\" --prefix-colors \"cyan,magenta\"",
     "dev:web": "cd apps/web && npm run dev",
     "dev:api": "cd apps/api && npm run dev",
+    "dev:web-only": "npm run dev:web",
+    "dev:api-only": "npm run dev:api",
     "build": "npm run build:web",
     "build:web": "cd apps/web && npm run build",
     "start": "cd apps/web && npm start",
