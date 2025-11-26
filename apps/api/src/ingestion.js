@@ -405,10 +405,27 @@ async function ingestFromNewsAPI() {
         let inserted = 0;
         let skipped = 0;
 
+        // Block non-educational sources
+        const blockedSources = [
+            'biztoc', 'bleeping computer', 'globe newswire', 'globenewswire',
+            'the cut', 'notebookcheck', 'notebook check', 'techcrunch',
+            'venturebeat', 'business insider', 'forbes', 'bloomberg',
+            'cnbc', 'reuters', 'associated press', 'yahoo'
+        ];
+
         for (const item of articles) {
             try {
                 // Skip removed content
                 if (item.title === '[Removed]') continue;
+
+                // Skip blocked sources
+                const sourceName = (item.source?.name || '').toLowerCase();
+                const isBlocked = blockedSources.some(blocked => sourceName.includes(blocked));
+                if (isBlocked) {
+                    console.log(`⊘ Skipping blocked source: ${item.source?.name}`);
+                    skipped++;
+                    continue;
+                }
 
                 const article = {
                     title: cleanText(item.title, 500),
