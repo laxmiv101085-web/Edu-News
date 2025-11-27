@@ -12,7 +12,7 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
     const [articles, setArticles] = useState<Article[]>(initialArticles);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(initialArticles.length === 0);
     const [error, setError] = useState<string | null>(null);
 
     // Ref to track the current active request to prevent race conditions
@@ -71,6 +71,8 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
     useEffect(() => {
         setPage(1);
         setHasMore(true);
+        setArticles([]); // Clear existing articles to avoid showing stale data
+        setIsLoading(true); // Show loading state immediately
         fetchArticles(1, true);
     }, [fetchArticles]);
 
