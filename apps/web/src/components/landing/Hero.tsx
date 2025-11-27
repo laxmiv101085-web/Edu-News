@@ -5,6 +5,7 @@ import { ArrowRight, Download, X } from 'lucide-react';
 import Link from 'next/link';
 
 import { useAuth } from '../../hooks/useAuth';
+import api from '../../lib/api/client';
 
 interface Article {
     id: string;
@@ -26,8 +27,8 @@ const Hero = () => {
         setLoading(true);
         try {
             // Fetch more articles to filter through
-            const response = await fetch('/api/feeds/list?limit=100');
-            const data = await response.json();
+            const response = await api.get('/api/feed', { params: { limit: 100 } });
+            const data = response.data;
 
             // Filter for exam-related keywords
             const examKeywords = ['jee', 'neet', 'upsc', 'ssc', 'ibps', 'gate', 'cat', 'clat',
