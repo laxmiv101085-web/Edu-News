@@ -2,7 +2,7 @@ import axios from "axios";
 import Router from "next/router";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "https://edu-news-api.onrender.com",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '', // Empty string allows relative paths like /api/...
   withCredentials: true,
   timeout: 15000,
 });
