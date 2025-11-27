@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Article } from '../lib/news/types';
 import api from '../lib/api/client';
 
@@ -16,16 +16,18 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
     const [error, setError] = useState<string | null>(null);
 
     // Ref to track the current active request to prevent race conditions
-    const activeRequestRef = useState<{ id: string }>({ id: '' })[0];
+    const activeRequestRef = useRef<string>('');
 
-    const fetchArticles = useCallback(async (pageNum: number, isReset: boolean) => {
+    const fetchArticles = useCallback(async (pageNum: number, isReset: boolean, background: boolean = false) => {
         // Generate a unique ID for this request
         const requestId = `${category}-${search}-${pageNum}-${Date.now()}`;
-        activeRequestRef.id = requestId;
+        activeRequestRef.current = requestId;
 
         try {
-            setIsLoading(true);
-            setError(null);
+            if (!background) {
+                setIsLoading(true);
+                setError(null);
+            }
 
             const params = new URLSearchParams({
                 page: pageNum.toString(),
@@ -43,7 +45,7 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
             const res = await api.get(`/api/feeds/list?${params.toString()}`);
 
             // Only update state if this is still the active request
-            if (activeRequestRef.id === requestId) {
+            if (activeRequestRef.current === requestId) {
                 const newArticles = res.data?.items || [];
                 const pagination = res.data?.pagination || { page: 1, totalPages: 1 };
 
@@ -53,17 +55,17 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
 
         } catch (err) {
             // Only update error if this is still the active request
-            if (activeRequestRef.id === requestId) {
+            if (activeRequestRef.current === requestId) {
                 console.error('Error fetching articles:', err);
-                setError('Failed to load articles');
+                if (!background) setError('Failed to load articles');
             }
         } finally {
             // Only turn off loading if this is still the active request
-            if (activeRequestRef.id === requestId) {
+            if (activeRequestRef.current === requestId && !background) {
                 setIsLoading(false);
             }
         }
-    }, [category, search, activeRequestRef]);
+    }, [category, search]);
 
     // Reset when filters change
     useEffect(() => {
@@ -75,13 +77,17 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
     // Auto-refresh every 60 seconds
     useEffect(() => {
         const refreshInterval = setInterval(() => {
-            console.log('🔄 Auto-refreshing feed...');
-            // When auto-refreshing, we want to fetch the first page and reset the articles
-            fetchArticles(1, true);
+            // Only auto-refresh if we are on the first page to avoid disrupting the user
+            if (page === 1) {
+                console.log('🔄 Auto-refreshing feed...');
+                fetchArticles(1, true, true);
+            }
         }, 60000); // 60 seconds
 
         return () => clearInterval(refreshInterval);
-    }, [fetchArticles]);
+    }, [fetchArticles, page]);
+
+
 
     const loadMore = () => {
         if (!isLoading && hasMore) {
