@@ -27,8 +27,6 @@ const sources = [
     new RSSProvider('Physics Wallah', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCxWHowSs2kF5h5jMV_YqPgA', 'exams'),
     new RSSProvider('Vedantu JEE', 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6pHvJdAYUU8gM1WPJ6kFNA', 'exams'),
     new RSSProvider('Unacademy', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCABe2FgVNv2hgBeMu2mySVg', 'exams'),
-    new RSSProvider('Khan Academy India', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCT7PmQe9y9fq1KPPIAdQkpw', 'general'),
-    new RSSProvider('Examrace', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCFz8k4WJIWUq5xPv8iUCLvw', 'exams'),
 
     // Scholarship Portals
     new RSSProvider('Buddy4Study Scholarships', 'https://www.buddy4study.com/rss/scholarships', 'scholarships'),
