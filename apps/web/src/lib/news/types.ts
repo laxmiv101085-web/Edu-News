@@ -10,7 +10,7 @@ export interface Article {
     content?: string;
     url: string;
     publishedAt: string; // ISO string
-    category: 'scholarships' | 'exams' | 'results' | 'admissions' | 'policy' | 'general';
+    category: 'scholarships' | 'exams' | 'results' | 'admissions' | 'jobs' | 'general';
     tags: string[];
     image_url?: string;
     language: string;

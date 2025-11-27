@@ -12,7 +12,7 @@ const categories = [
     { id: 'exams', label: 'Exams' },
     { id: 'results', label: 'Results' },
     { id: 'admissions', label: 'Admissions' },
-    { id: 'policy', label: 'Policy' },
+    { id: 'jobs', label: 'Jobs/Vacancy' },
 ];
 
 const CategoryFilters = ({ activeCategory, onSelectCategory }: CategoryFiltersProps) => {
