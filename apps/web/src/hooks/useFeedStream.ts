@@ -31,7 +31,7 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
 
             const params = new URLSearchParams({
                 page: pageNum.toString(),
-                limit: '12',
+                limit: '50',
             });
 
             if (category && category !== 'all') {
