@@ -5,33 +5,60 @@ import { v4 as uuidv4 } from 'uuid';
 const detectCategory = (title: string, summary: string, defaultCategory: Article['category']): Article['category'] => {
     const text = (title + ' ' + summary).toLowerCase();
 
-    // Check for job/vacancy keywords
-    if (text.includes('vacancy') || text.includes('vacancies') || text.includes('recruitment') ||
-        text.includes('hiring') || text.includes('jobs') || text.includes('employment')) {
+    // PRIORITY 1: Check for job/vacancy keywords FIRST (most specific)
+    const jobKeywords = [
+        'vacancy', 'vacancies', 'recruitment', 'hiring', 'jobs', 'employment',
+        'ssc', 'railway', 'rrb', 'ibps', 'bank recruitment', 'government jobs',
+        'posts', 'mts', 'havaldar', 'constable', 'clerk', 'stenographer',
+        'recruitment 2025', 'recruitment 2026', 'application invited'
+    ];
+    if (jobKeywords.some(keyword => text.includes(keyword))) {
         return 'jobs';
     }
 
-    // Check for exam keywords (datesheet, timetable, exam, CTET, etc.)
-    if (text.includes('exam') || text.includes('test') || text.includes('datesheet') ||
-        text.includes('timetable') || text.includes('ctet') || text.includes('jee') ||
-        text.includes('neet') || text.includes('entrance')) {
+    // PRIORITY 2: Check for exam keywords (very comprehensive)
+    const examKeywords = [
+        'exam', 'test', 'examination', 'datesheet', 'date sheet',
+        'timetable', 'time table', 'ctet', 'tet', 'jee', 'neet',
+        'entrance', 'entrance exam', 'competitive exam',
+        'rbse', 'cbse', 'icse', 'board exam', 'board examination',
+        'class 10', 'class 12', '10th', '12th', 'ssc exam', 'hsc exam',
+        'admit card', 'hall ticket', 'exam schedule', 'exam notification',
+        'upcoming exam', 'exam date', 'conduct exam', 'hold exam',
+        'exam registration', 'apply for exam', 'exam form'
+    ];
+    if (examKeywords.some(keyword => text.includes(keyword))) {
         return 'exams';
     }
 
-    // Check for result keywords
-    if (text.includes('result') || text.includes('scorecard') || text.includes('marks') ||
-        text.includes('qualified') || text.includes('pass')) {
+    // PRIORITY 3: Check for result keywords
+    const resultKeywords = [
+        'result', 'results', 'scorecard', 'score card', 'marks',
+        'qualified', 'pass', 'merit list', 'toppers', 'declaration',
+        'result declared', 'result released', 'result announced',
+        'check result', 'download result', 'result out'
+    ];
+    if (resultKeywords.some(keyword => text.includes(keyword))) {
         return 'results';
     }
 
-    // Check for admission keywords
-    if (text.includes('admission') || text.includes('counseling') || text.includes('seat allotment') ||
-        text.includes('application form') || text.includes('registration')) {
+    // PRIORITY 4: Check for admission keywords
+    const admissionKeywords = [
+        'admission', 'admissions', 'counseling', 'counselling',
+        'seat allotment', 'application form', 'registration',
+        'apply online', 'online application', 'last date',
+        'admission process', 'admission notification'
+    ];
+    if (admissionKeywords.some(keyword => text.includes(keyword))) {
         return 'admissions';
     }
 
-    // Check for scholarship keywords
-    if (text.includes('scholarship') || text.includes('fellowship') || text.includes('grant')) {
+    // PRIORITY 5: Check for scholarship keywords
+    const scholarshipKeywords = [
+        'scholarship', 'scholarships', 'fellowship', 'fellowships',
+        'grant', 'financial aid', 'stipend', 'scholarship program'
+    ];
+    if (scholarshipKeywords.some(keyword => text.includes(keyword))) {
         return 'scholarships';
     }
 
