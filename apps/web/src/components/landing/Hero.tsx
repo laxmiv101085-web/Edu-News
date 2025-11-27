@@ -30,19 +30,35 @@ const Hero = () => {
             const response = await api.get('/api/feed', { params: { limit: 100 } });
             const data = response.data;
 
-            // Filter for JEE, NEET, and Board Exam keywords ONLY
-            const examKeywords = [
-                'jee', 'jee main', 'jee advanced', 'iit', 'nit', 'iiit',
-                'neet', 'neet ug', 'aiims', 'medical entrance',
-                'board', 'cbse', 'icse', 'state board', '10th', '12th',
-                'class 10', 'class 12', 'board exam', 'board result',
-                'admit card', 'registration', 'counseling', 'cutoff',
-                'answer key', 'result'
-            ];
-
+            // Filter for JEE, NEET, and Board Exam keywords ONLY (strict matching)
             const examArticles = (data.items || []).filter((article: Article) => {
                 const text = (article.title + ' ' + article.summary).toLowerCase();
-                return examKeywords.some(keyword => text.includes(keyword));
+
+                // Must contain at least one of these SPECIFIC exam identifiers
+                const specificExamKeywords = [
+                    'jee', 'jee main', 'jee advanced', 'joint entrance',
+                    'neet', 'neet ug', 'neet pg', 'medical entrance',
+                    'cbse', 'icse', 'state board',
+                    'class 10', 'class 12', 'class x', 'class xii',
+                    '10th board', '12th board', 'board exam',
+                    'iit ', ' iit', 'nit ', ' nit', 'aiims'
+                ];
+
+                // Exclude articles with these keywords (banking, jobs, etc.)
+                const excludeKeywords = [
+                    'bank', 'baroda', 'sbi', 'ibps', 'rbi',
+                    'upsc', 'ssc', 'railway', 'rrb',
+                    'abroad', 'scholarship', 'study abroad',
+                    'wage', 'salary', 'career', 'recruitment',
+                    'pm modi', 'government scheme'
+                ];
+
+                // Check if article contains excluded keywords
+                const hasExcluded = excludeKeywords.some(keyword => text.includes(keyword));
+                if (hasExcluded) return false;
+
+                // Check if article contains specific exam keywords
+                return specificExamKeywords.some(keyword => text.includes(keyword));
             });
 
             // Get top 50 exam-related articles
