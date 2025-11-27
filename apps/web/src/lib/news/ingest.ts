@@ -4,13 +4,26 @@ import { Article } from './types';
 import { cacheSet, cacheGet } from '../redis';
 import { db } from '../db';
 
-// Define sources
+// Define sources focused on JEE, NEET, UPSC, SSC, Government Exams, Jobs & Board Exams
 const sources = [
-    new RSSProvider('Hindustan Times', 'https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml', 'general'),
-    new RSSProvider('Times of India', 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', 'general'),
+    // Major Indian Education News Portals
+    new RSSProvider('Hindustan Times Education', 'https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml', 'general'),
+    new RSSProvider('Times of India Education', 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', 'exams'),
+    new RSSProvider('Indian Express Education', 'https://indianexpress.com/section/education/feed/', 'general'),
     new RSSProvider('NDTV Education', 'https://feeds.feedburner.com/ndtvnews-education', 'general'),
-    new RSSProvider('Indian Express', 'https://indianexpress.com/section/education/feed/', 'general'),
-    // Add NewsAPI if key exists
+
+    // Exam-specific sources
+    new RSSProvider('CareerIndia', 'https://www.careerindia.com/rss/entrance-exams.xml', 'exams'),
+    new RSSProvider('Jagran Josh', 'https://www.jagranjosh.com/rss/articles.xml', 'exams'),
+
+    // Jobs & Government Exams
+    new RSSProvider('Sarkari Result', 'https://www.sarkariresult.com/latestjob.xml', 'results'),
+    new RSSProvider('Employment News', 'https://employmentnews.gov.in/NewEmp/RSS/Vacancies.xml', 'general'),
+
+    // Board Exams & Results
+    new RSSProvider('CBSE Updates', 'https://www.cbse.gov.in/newsite/rss-feed.xml', 'results'),
+
+    // Add NewsAPI if key exists (for additional coverage)
     ...(process.env.NEWSAPI_KEY ? [new NewsAPIProvider(process.env.NEWSAPI_KEY)] : []),
 ];
 

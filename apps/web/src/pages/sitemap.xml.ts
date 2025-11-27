@@ -55,21 +55,23 @@ function SiteMap() {
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   // We make an API call to gather the URLs for our site
+  let articles: any[] = [];
+
   try {
-    const { articles } = await getLatestNews('all', 1000);
-
-    // We generate the XML sitemap with the articles data
-    const sitemap = generateSiteMap(articles);
-
-    res.setHeader('Content-Type', 'text/xml');
-    // we send the XML to the browser
-    res.write(sitemap);
-    res.end();
+    const result = await getLatestNews('all', 1000);
+    articles = result.articles;
   } catch (e) {
-    console.error('Error generating sitemap:', e);
-    res.write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
-    res.end();
+    console.error('Error fetching articles for sitemap (using static pages only):', e);
+    // Continue with empty articles array - will generate static sitemap
   }
+
+  // We generate the XML sitemap with the articles data (or empty array)
+  const sitemap = generateSiteMap(articles);
+
+  res.setHeader('Content-Type', 'text/xml');
+  // we send the XML to the browser
+  res.write(sitemap);
+  res.end();
 
   return {
     props: {},
