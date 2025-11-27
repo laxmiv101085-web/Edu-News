@@ -42,7 +42,7 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
                 params.append('search', search);
             }
 
-            const res = await api.get(`/api/feeds/list?${params.toString()}`);
+            const res = await api.get(`/api/feed?${params.toString()}`);
 
             // Only update state if this is still the active request
             if (activeRequestRef.current === requestId) {
