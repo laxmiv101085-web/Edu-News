@@ -97,10 +97,10 @@ export const getLatestNews = async (
                 ];
 
                 const sources = [
-                    { id: 'ht', name: 'Hindustan Times', url: 'https://www.hindustantimes.com/education' },
-                    { id: 'toi', name: 'Times of India', url: 'https://timesofindia.indiatimes.com/education' },
-                    { id: 'ndtv', name: 'NDTV Education', url: 'https://www.ndtv.com/education' },
-                    { id: 'ie', name: 'Indian Express', url: 'https://indianexpress.com/section/education/' }
+                    { id: 'ht', name: 'Hindustan Times', searchUrl: 'https://www.hindustantimes.com/search?q=' },
+                    { id: 'toi', name: 'Times of India', searchUrl: 'https://timesofindia.indiatimes.com/topic/' },
+                    { id: 'ndtv', name: 'NDTV Education', searchUrl: 'https://www.ndtv.com/search?q=' },
+                    { id: 'ie', name: 'Indian Express', searchUrl: 'https://indianexpress.com/?s=' }
                 ];
 
                 // Category-specific images
@@ -117,11 +117,14 @@ export const getLatestNews = async (
                 const source = sources[i % sources.length];
                 const imageUrl = categoryImages[topic.category] || categoryImages.general;
 
+                // Generate a search URL for the specific topic
+                const searchUrl = `${source.searchUrl}${encodeURIComponent(topic.title)}`;
+
                 return {
                     id: `mock-${i + 1}`,
                     title: `${topic.title} - Update ${Math.floor(i / 10) + 1}`,
                     summary: `Latest update regarding ${topic.title}. Check the official website for more details on entrance tests, results, and counseling procedures.`,
-                    url: source.url, // Link to the real news section
+                    url: searchUrl, // Link to the specific search page
                     image_url: imageUrl,
                     publishedAt: new Date(baseDate.getTime() - i * 3600000).toISOString(),
                     source: { id: source.id, name: source.name },
