@@ -16,11 +16,12 @@ if (!admin.apps.length) {
 
 export const verifyIdToken = async (token: string) => {
     try {
+        if (!admin.apps.length) throw new Error('Firebase not initialized');
         return await admin.auth().verifyIdToken(token);
     } catch (error) {
         throw error;
     }
 };
 
-export const adminDb = admin.firestore();
-export const adminAuth = admin.auth();
+export const adminDb = admin.apps.length ? admin.firestore() : null;
+export const adminAuth = admin.apps.length ? admin.auth() : null;
