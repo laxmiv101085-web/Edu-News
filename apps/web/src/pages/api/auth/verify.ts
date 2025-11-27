@@ -17,6 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const uid = decodedToken.uid;
 
         // Sync user to Firestore if needed
+        if (!adminDb) {
+            throw new Error('Database not initialized');
+        }
         await adminDb.collection('users').doc(uid).set({
             email: decodedToken.email,
             name: decodedToken.name || decodedToken.email?.split('@')[0],

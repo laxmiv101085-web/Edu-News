@@ -19,6 +19,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === 'GET') {
         // Get saved articles
+        if (!adminDb) {
+            return res.status(500).json({ error: 'Database not initialized' });
+        }
         const snapshot = await adminDb.collection('users').doc(uid).collection('saved').orderBy('savedAt', 'desc').get();
         const saved = snapshot.docs.map(doc => doc.data());
         return res.status(200).json({ saved });
@@ -31,6 +34,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ error: 'Invalid article data' });
         }
 
+        if (!adminDb) {
+            return res.status(500).json({ error: 'Database not initialized' });
+        }
         await adminDb.collection('users').doc(uid).collection('saved').doc(article.id).set({
             ...article,
             savedAt: new Date().toISOString(),
@@ -46,6 +52,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ error: 'Missing articleId' });
         }
 
+        if (!adminDb) {
+            return res.status(500).json({ error: 'Database not initialized' });
+        }
         await adminDb.collection('users').doc(uid).collection('saved').doc(articleId).delete();
         return res.status(200).json({ status: 'removed' });
     }

@@ -25,6 +25,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Check if user already exists in Firestore
+        if (!adminDb) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
         const userRef = adminDb.collection('users').doc(firebaseUid);
         const userDoc = await userRef.get();
 
