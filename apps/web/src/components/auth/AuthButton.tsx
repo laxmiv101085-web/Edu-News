@@ -52,12 +52,6 @@ export const AuthButton = () => {
     return (
         <div className="flex items-center gap-3">
             <Link
-                href="/login"
-                className="flex items-center space-x-2 text-white hover:text-accent-yellow transition-colors font-medium text-sm"
-            >
-                <span>Sign In</span>
-            </Link>
-            <Link
                 href="/signup"
                 className="flex items-center space-x-2 bg-white text-black hover:bg-neutral-200 px-4 py-2 rounded-full transition-all font-bold text-sm"
             >
