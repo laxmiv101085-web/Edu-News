@@ -14,7 +14,7 @@ export const useBookmarks = () => {
 
     try {
       setLoading(true);
-      const response = await api.get('/api/bookmarks');
+      const response = await api.get('/api/user/saved');
       const ids = response.data.map((article: any) => Number(article.id));
       setSavedIds(ids);
     } catch (error) {
@@ -48,10 +48,10 @@ export const useBookmarks = () => {
 
     try {
       if (currentlySaved) {
-        await api.delete(`/api/bookmarks/${id}`);
+        await api.delete('/api/user/saved', { data: { articleId: id } });
         toast.success('Article removed from bookmarks');
       } else {
-        await api.post('/api/bookmarks', { articleId: id });
+        await api.post('/api/user/saved', { article: { id: id } });
         toast.success('Article saved to bookmarks');
       }
     } catch (error) {

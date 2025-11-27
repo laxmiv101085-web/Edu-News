@@ -61,10 +61,7 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
 
             <div className="p-5 flex flex-col flex-1 relative z-10">
                 <div className="flex items-center justify-between mb-3">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
-                        {article.category}
-                    </span>
-                    <SaveButton articleId={Number(article.id)} />
+                    {/* Removed duplicate category and save button */}
                 </div>
 
                 <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-accent-yellow transition-colors">

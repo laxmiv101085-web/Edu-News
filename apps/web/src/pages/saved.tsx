@@ -24,8 +24,8 @@ export default function SavedArticles() {
         const fetchSavedArticles = async () => {
             if (!user) return;
             try {
-                const response = await api.get('/api/bookmarks');
-                setArticles(response.data);
+                const response = await api.get('/api/user/saved');
+                setArticles(response.data.saved || []);
             } catch (error) {
                 console.error('Error fetching saved articles:', error);
             } finally {
