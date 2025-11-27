@@ -103,15 +103,26 @@ export const getLatestNews = async (
                     { id: 'ie', name: 'Indian Express', url: 'https://indianexpress.com/section/education/' }
                 ];
 
+                // Category-specific images
+                const categoryImages: Record<string, string> = {
+                    exams: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80', // Exam paper/pen
+                    admissions: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80', // University/Graduation
+                    results: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80', // Data/Success
+                    scholarships: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80', // Finance/Money
+                    policy: 'https://images.unsplash.com/photo-1541872703-74c5963631df?auto=format&fit=crop&w=800&q=80', // Building/Government
+                    general: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80' // Books/Learning
+                };
+
                 const topic = topics[i % topics.length];
                 const source = sources[i % sources.length];
+                const imageUrl = categoryImages[topic.category] || categoryImages.general;
 
                 return {
                     id: `mock-${i + 1}`,
                     title: `${topic.title} - Update ${Math.floor(i / 10) + 1}`,
                     summary: `Latest update regarding ${topic.title}. Check the official website for more details on entrance tests, results, and counseling procedures.`,
                     url: source.url, // Link to the real news section
-                    image_url: `https://picsum.photos/seed/${i + 1}/800/600`,
+                    image_url: imageUrl,
                     publishedAt: new Date(baseDate.getTime() - i * 3600000).toISOString(),
                     source: { id: source.id, name: source.name },
                     category: topic.category as any,
