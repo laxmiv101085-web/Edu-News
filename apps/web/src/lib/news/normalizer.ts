@@ -55,6 +55,11 @@ export const normalizeArticle = (raw: any, sourceName: string, category: Article
         }
     }
 
+    // Special handling for PM Narendra Modi channel - use his official portrait
+    if (sourceName === 'Narendra Modi' && !imageUrl) {
+        imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Narendra_Modi_2022_portrait.jpg/800px-Narendra_Modi_2022_portrait.jpg';
+    }
+
     const title = raw.title || 'No Title';
     const summary = raw.description || raw.summary || raw.contentSnippet || '';
 
