@@ -6,10 +6,10 @@ import { db } from '../db';
 
 // Define sources
 const sources = [
-    new RSSProvider('Hindustan Times', 'https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml', 'exams'),
+    new RSSProvider('Hindustan Times', 'https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml', 'general'),
     new RSSProvider('Times of India', 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', 'general'),
-    new RSSProvider('NDTV Education', 'https://feeds.feedburner.com/ndtvnews-education', 'admissions'),
-    new RSSProvider('Indian Express', 'https://indianexpress.com/section/education/feed/', 'policy'),
+    new RSSProvider('NDTV Education', 'https://feeds.feedburner.com/ndtvnews-education', 'general'),
+    new RSSProvider('Indian Express', 'https://indianexpress.com/section/education/feed/', 'general'),
     // Add NewsAPI if key exists
     ...(process.env.NEWSAPI_KEY ? [new NewsAPIProvider(process.env.NEWSAPI_KEY)] : []),
 ];

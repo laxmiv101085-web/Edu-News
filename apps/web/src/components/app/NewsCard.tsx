@@ -77,20 +77,11 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                             <Calendar className="w-3 h-3" />
-                            {dateDisplay}
+                            {dateDisplay.split(' ').map((word, i) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
                         </div>
-                        <div className="flex items-center gap-2 max-w-[150px]">
-                            {article.url && (
-                                <img
-                                    src={`https://www.google.com/s2/favicons?domain=${new URL(article.url).hostname}&sz=32`}
-                                    alt=""
-                                    className="w-4 h-4 rounded-full"
-                                />
-                            )}
-                            <span className="truncate" title={typeof article.source === 'string' ? article.source : article.source?.name}>
-                                {typeof article.source === 'string' ? article.source : article.source?.name}
-                            </span>
-                        </div>
+                        <span className="truncate max-w-[150px]" title={typeof article.source === 'string' ? article.source : article.source?.name}>
+                            {typeof article.source === 'string' ? article.source : article.source?.name}
+                        </span>
                     </div>
 
                     <div className="flex items-center gap-3">
