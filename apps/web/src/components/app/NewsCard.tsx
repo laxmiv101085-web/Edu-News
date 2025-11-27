@@ -140,6 +140,7 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
                         </div>
                     </div>
                 </div>
+            </div>
         </motion.div>
     );
 };
