@@ -2,7 +2,9 @@ import axios from "axios";
 import Router from "next/router";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || '', // Empty string allows relative paths like /api/...
+  // Force relative paths to ensure we use the local Next.js API routes
+  baseURL: '',
+  // baseURL: process.env.NEXT_PUBLIC_API_URL || '',
   withCredentials: true,
   timeout: 15000,
 });
