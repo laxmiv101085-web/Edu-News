@@ -26,8 +26,8 @@ const Hero = () => {
     const fetchTopNews = async () => {
         setLoading(true);
         try {
-            // Fetch more articles to filter through
-            const response = await api.get('/api/feed', { params: { limit: 100 } });
+            // Fetch many more articles to filter through (need more to get 50 after strict filtering)
+            const response = await api.get('/api/feed', { params: { limit: 500 } });
             const data = response.data;
 
             // Filter for JEE, NEET, and Board Exam keywords ONLY (strict matching)
