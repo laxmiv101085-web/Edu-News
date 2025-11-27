@@ -26,7 +26,7 @@ const Hero = () => {
     const fetchTopNews = async () => {
         setLoading(true);
         try {
-            // Fetch many more articles to filter through (need more to get 50 after strict filtering)
+            // Fetch many more articles to filter through (need more to get 25 high-quality after strict filtering)
             const response = await api.get('/api/feed', { params: { limit: 500 } });
             const data = response.data;
 
@@ -44,13 +44,17 @@ const Hero = () => {
                     'iit ', ' iit', 'nit ', ' nit', 'aiims'
                 ];
 
-                // Exclude articles with these keywords (banking, jobs, etc.)
+                // Exclude articles with these keywords (banking, jobs, politics, rankings, etc.)
                 const excludeKeywords = [
                     'bank', 'baroda', 'sbi', 'ibps', 'rbi',
                     'upsc', 'ssc', 'railway', 'rrb',
                     'abroad', 'scholarship', 'study abroad',
                     'wage', 'salary', 'career', 'recruitment',
-                    'pm modi', 'government scheme'
+                    'pm modi', 'government scheme', 'nitish kumar',
+                    'minister', 'cabinet', 'political', 'qualification 2025: cm',
+                    'alumnus award', 'distinguished alumnus', 'qs ranking',
+                    'qs asia', 'world ranking', 'fell in qs', 'honors those',
+                    'global ranking', 'university ranking'
                 ];
 
                 // Check if article contains excluded keywords
@@ -61,8 +65,29 @@ const Hero = () => {
                 return specificExamKeywords.some(keyword => text.includes(keyword));
             });
 
-            // Get top 50 exam-related articles
-            setTopNews(examArticles.slice(0, 50));
+            // Remove duplicates based on title similarity
+            const uniqueArticles = examArticles.filter((article: Article, index: number, self: Article[]) => {
+                // Check if this is the first occurrence of a similar title
+                return index === self.findIndex((a: Article) => {
+                    // Normalize titles for comparison
+                    const title1 = article.title.toLowerCase().trim();
+                    const title2 = a.title.toLowerCase().trim();
+
+                    // Check for exact or very similar titles
+                    if (title1 === title2) return true;
+
+                    // Check if titles are very similar (more than 70% overlap)
+                    const words1 = title1.split(' ').filter((w: string) => w.length > 3);
+                    const words2 = title2.split(' ').filter((w: string) => w.length > 3);
+                    const commonWords = words1.filter((w: string) => words2.includes(w));
+                    const similarity = commonWords.length / Math.max(words1.length, words2.length);
+
+                    return similarity > 0.7;
+                });
+            });
+
+            // Get top 25 exam-related articles (reduced from 50 for better quality)
+            setTopNews(uniqueArticles.slice(0, 25));
         } catch (error) {
             console.error('Failed to fetch top news:', error);
         } finally {
@@ -200,7 +225,7 @@ const Hero = () => {
                         >
                             <div className="flex justify-between items-center mb-6">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-white">🎯 Top 50 Exam Updates</h2>
+                                    <h2 className="text-2xl font-bold text-white">🎯 Top 25 Exam Updates</h2>
                                     <p className="text-sm text-neutral-400 mt-1">JEE, NEET & 10th/12th Board Exams</p>
                                 </div>
                                 <button
