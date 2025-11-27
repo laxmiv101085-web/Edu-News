@@ -30,11 +30,15 @@ const Hero = () => {
             const response = await api.get('/api/feed', { params: { limit: 100 } });
             const data = response.data;
 
-            // Filter for exam-related keywords
-            const examKeywords = ['jee', 'neet', 'upsc', 'ssc', 'ibps', 'gate', 'cat', 'clat',
-                'nda', 'cds', 'railway', 'rrb', 'banking', 'ias', 'ips',
-                'exam', 'test', 'entrance', 'cutoff', 'result', 'answer key',
-                'admit card', 'registration', 'counseling'];
+            // Filter for JEE, NEET, and Board Exam keywords ONLY
+            const examKeywords = [
+                'jee', 'jee main', 'jee advanced', 'iit', 'nit', 'iiit',
+                'neet', 'neet ug', 'aiims', 'medical entrance',
+                'board', 'cbse', 'icse', 'state board', '10th', '12th',
+                'class 10', 'class 12', 'board exam', 'board result',
+                'admit card', 'registration', 'counseling', 'cutoff',
+                'answer key', 'result'
+            ];
 
             const examArticles = (data.items || []).filter((article: Article) => {
                 const text = (article.title + ' ' + article.summary).toLowerCase();
@@ -181,7 +185,7 @@ const Hero = () => {
                             <div className="flex justify-between items-center mb-6">
                                 <div>
                                     <h2 className="text-2xl font-bold text-white">🎯 Top 50 Exam Updates</h2>
-                                    <p className="text-sm text-neutral-400 mt-1">JEE, NEET, UPSC, SSC, IBPS & More</p>
+                                    <p className="text-sm text-neutral-400 mt-1">JEE, NEET & 10th/12th Board Exams</p>
                                 </div>
                                 <button
                                     onClick={() => setShowModal(false)}
