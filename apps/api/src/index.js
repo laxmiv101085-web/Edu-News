@@ -91,10 +91,13 @@ app.get('/api/feed', async (req, res) => {
             conditions.push(`category = $${params.length}`);
         }
 
-        // Filter by search term if provided
+        // Filter by search term if provided (with word-boundary matching)
         if (search) {
-            params.push(`%${search}%`);
-            conditions.push(`(title ILIKE $${params.length} OR summary ILIKE $${params.length})`);
+            // Use word boundary regex to match whole words only
+            // This prevents "jee" from matching "Dorjee" but still matches "JEE", "jee main", etc.
+            const searchPattern = `\\y${search}\\y`;
+            params.push(searchPattern);
+            conditions.push(`(title ~* $${params.length} OR summary ~* $${params.length})`);
         }
 
         // Apply conditions
