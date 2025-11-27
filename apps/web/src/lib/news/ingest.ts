@@ -95,16 +95,25 @@ export const getLatestNews = async (
                     { title: 'National Education Policy Implementation Update', category: 'policy' },
                     { title: 'IBPS PO Mains Result Declared', category: 'results' }
                 ];
+
+                const sources = [
+                    { id: 'ht', name: 'Hindustan Times', url: 'https://www.hindustantimes.com/education' },
+                    { id: 'toi', name: 'Times of India', url: 'https://timesofindia.indiatimes.com/education' },
+                    { id: 'ndtv', name: 'NDTV Education', url: 'https://www.ndtv.com/education' },
+                    { id: 'ie', name: 'Indian Express', url: 'https://indianexpress.com/section/education/' }
+                ];
+
                 const topic = topics[i % topics.length];
+                const source = sources[i % sources.length];
 
                 return {
                     id: `mock-${i + 1}`,
                     title: `${topic.title} - Update ${Math.floor(i / 10) + 1}`,
                     summary: `Latest update regarding ${topic.title}. Check the official website for more details on entrance tests, results, and counseling procedures.`,
-                    url: 'https://example.com',
+                    url: source.url, // Link to the real news section
                     image_url: `https://picsum.photos/seed/${i + 1}/800/600`,
                     publishedAt: new Date(baseDate.getTime() - i * 3600000).toISOString(),
-                    source: { id: 'mock', name: 'Mock Source' },
+                    source: { id: source.id, name: source.name },
                     category: topic.category as any,
                     tags: ['mock', 'education', 'exam', 'result'],
                     language: 'en'
