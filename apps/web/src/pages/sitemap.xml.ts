@@ -3,8 +3,12 @@ import { GetServerSideProps } from 'next';
 const EXTERNAL_DATA_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://edu-news-35vza0wnv-vickyrrrrrrs-projects.vercel.app';
 
+import { getLatestNews } from '../lib/news/ingest';
+
+// ... (keep generateSiteMap but update it to use publishedAt)
+
 function generateSiteMap(articles: any[]) {
-    return `<?xml version="1.0" encoding="UTF-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
      <!-- Static Pages -->
      <url>
@@ -30,48 +34,46 @@ function generateSiteMap(articles: any[]) {
 
      <!-- Dynamic Article Pages -->
      ${articles
-            .map(({ id, updated_at }) => {
-                return `
+      .map(({ id, publishedAt, updated_at }) => {
+        return `
        <url>
            <loc>${SITE_URL}/article/${id}</loc>
-           <lastmod>${updated_at || new Date().toISOString()}</lastmod>
+           <lastmod>${updated_at || publishedAt || new Date().toISOString()}</lastmod>
            <changefreq>weekly</changefreq>
            <priority>0.7</priority>
        </url>
      `;
-            })
-            .join('')}
+      })
+      .join('')}
    </urlset>
  `;
 }
 
 function SiteMap() {
-    // getServerSideProps will do the heavy lifting
+  // getServerSideProps will do the heavy lifting
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-    // We make an API call to gather the URLs for our site
-    try {
-        const request = await fetch(`${EXTERNAL_DATA_URL}/api/feed?limit=1000`);
-        const data = await request.json();
-        const articles = data.items || [];
+  // We make an API call to gather the URLs for our site
+  try {
+    const { articles } = await getLatestNews('all', 1000);
 
-        // We generate the XML sitemap with the articles data
-        const sitemap = generateSiteMap(articles);
+    // We generate the XML sitemap with the articles data
+    const sitemap = generateSiteMap(articles);
 
-        res.setHeader('Content-Type', 'text/xml');
-        // we send the XML to the browser
-        res.write(sitemap);
-        res.end();
-    } catch (e) {
-        console.error('Error generating sitemap:', e);
-        res.write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
-        res.end();
-    }
+    res.setHeader('Content-Type', 'text/xml');
+    // we send the XML to the browser
+    res.write(sitemap);
+    res.end();
+  } catch (e) {
+    console.error('Error generating sitemap:', e);
+    res.write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
+    res.end();
+  }
 
-    return {
-        props: {},
-    };
+  return {
+    props: {},
+  };
 };
 
 export default SiteMap;

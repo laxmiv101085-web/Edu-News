@@ -26,7 +26,7 @@ const Hero = () => {
         setLoading(true);
         try {
             // Fetch more articles to filter through
-            const response = await fetch('/api/feed?limit=100');
+            const response = await fetch('/api/feeds/list?limit=100');
             const data = await response.json();
 
             // Filter for exam-related keywords
