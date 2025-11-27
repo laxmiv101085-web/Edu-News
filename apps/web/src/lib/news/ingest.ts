@@ -82,18 +82,34 @@ export const getLatestNews = async (
             const baseDate = new Date();
             baseDate.setHours(9, 0, 0, 0);
 
-            articles = Array.from({ length: 50 }, (_, i) => ({
-                id: `mock-${i + 1}`,
-                title: `Mock Article ${i + 1}: Education Update`,
-                summary: `This is a generated mock summary for article ${i + 1}. It simulates real content when the backend is not available.`,
-                url: 'https://example.com',
-                image_url: `https://picsum.photos/seed/${i + 1}/800/600`,
-                publishedAt: new Date(baseDate.getTime() - i * 3600000).toISOString(),
-                source: { id: 'mock', name: 'Mock Source' },
-                category: ['exams', 'scholarships', 'policy', 'admissions'][i % 4] as any,
-                tags: ['mock', 'education'],
-                language: 'en'
-            }));
+            articles = Array.from({ length: 50 }, (_, i) => {
+                const topics = [
+                    { title: 'JEE Main 2025 Exam Date Announced', category: 'exams' },
+                    { title: 'NEET UG 2025 Registration Begins', category: 'admissions' },
+                    { title: 'CBSE Class 12 Board Exam Schedule', category: 'exams' },
+                    { title: 'UPSC Civil Services Prelims Result Out', category: 'results' },
+                    { title: 'New Scholarship for Engineering Students', category: 'scholarships' },
+                    { title: 'GATE 2025 Admit Card Released', category: 'exams' },
+                    { title: 'SSC CGL Tier 1 Answer Key Out', category: 'results' },
+                    { title: 'IIM CAT 2024 Cutoff Marks', category: 'admissions' },
+                    { title: 'National Education Policy Implementation Update', category: 'policy' },
+                    { title: 'IBPS PO Mains Result Declared', category: 'results' }
+                ];
+                const topic = topics[i % topics.length];
+
+                return {
+                    id: `mock-${i + 1}`,
+                    title: `${topic.title} - Update ${Math.floor(i / 10) + 1}`,
+                    summary: `Latest update regarding ${topic.title}. Check the official website for more details on entrance tests, results, and counseling procedures.`,
+                    url: 'https://example.com',
+                    image_url: `https://picsum.photos/seed/${i + 1}/800/600`,
+                    publishedAt: new Date(baseDate.getTime() - i * 3600000).toISOString(),
+                    source: { id: 'mock', name: 'Mock Source' },
+                    category: topic.category as any,
+                    tags: ['mock', 'education', 'exam', 'result'],
+                    language: 'en'
+                };
+            });
         }
 
         if (!articles) return { articles: [], total: 0 };
