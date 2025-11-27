@@ -44,8 +44,8 @@ export const useFeedStream = ({ category = 'all', search = '', initialArticles =
 
             // Only update state if this is still the active request
             if (activeRequestRef.id === requestId) {
-                const newArticles = res.data.items;
-                const pagination = res.data.pagination;
+                const newArticles = res.data?.items || [];
+                const pagination = res.data?.pagination || { page: 1, totalPages: 1 };
 
                 setArticles(prev => isReset ? newArticles : [...prev, ...newArticles]);
                 setHasMore(pagination.page < pagination.totalPages);

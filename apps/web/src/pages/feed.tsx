@@ -73,7 +73,7 @@ export default function Feed() {
           </div>
         )}
 
-        {articles.length > 0 ? (
+        {Array.isArray(articles) && articles.length > 0 ? (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {articles.map((article, index) => (
@@ -118,7 +118,7 @@ export default function Feed() {
           )
         )}
 
-        {isLoading && articles.length === 0 && (
+        {isLoading && (!articles || articles.length === 0) && (
           <div className="flex justify-center py-20">
             <RefreshCw className="w-8 h-8 text-accent-yellow animate-spin" />
           </div>
