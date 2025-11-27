@@ -77,7 +77,7 @@ export default function Feed() {
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {articles.map((article, index) => (
-                <NewsCard key={`${article.id}-${index}`} article={article} index={index} />
+                <NewsCard key={article.id} article={article} index={index} />
               ))}
             </div>
 

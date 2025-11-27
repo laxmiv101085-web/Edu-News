@@ -20,9 +20,10 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
 
     return (
         <motion.div
+            layout
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.05 }}
+            transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.5) }} // Cap delay
             className="group relative flex flex-col bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300 hover:shadow-glass hover:-translate-y-1"
         >
             <Link href={article.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-0" />
@@ -142,4 +143,4 @@ const NewsCard = ({ article, index = 0 }: NewsCardProps) => {
     );
 };
 
-export default NewsCard;
+export default React.memo(NewsCard);

@@ -77,13 +77,18 @@ export const getLatestNews = async (
         // If we don't have enough articles (less than 50), force mock data to ensure a full feed
         if (!articles || articles.length < 50) {
             console.log('Insufficient data, using fallback mock data to ensure 50 items');
+
+            // Use a fixed base date for stable timestamps (e.g., today at 9 AM)
+            const baseDate = new Date();
+            baseDate.setHours(9, 0, 0, 0);
+
             articles = Array.from({ length: 50 }, (_, i) => ({
                 id: `mock-${i + 1}`,
                 title: `Mock Article ${i + 1}: Education Update`,
                 summary: `This is a generated mock summary for article ${i + 1}. It simulates real content when the backend is not available.`,
                 url: 'https://example.com',
                 image_url: `https://picsum.photos/seed/${i + 1}/800/600`,
-                publishedAt: new Date(Date.now() - i * 3600000).toISOString(),
+                publishedAt: new Date(baseDate.getTime() - i * 3600000).toISOString(),
                 source: { id: 'mock', name: 'Mock Source' },
                 category: ['exams', 'scholarships', 'policy', 'admissions'][i % 4] as any,
                 tags: ['mock', 'education'],
