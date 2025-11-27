@@ -11,7 +11,7 @@ interface Article {
     title: string;
     summary: string;
     category: string;
-    published_at: string;
+    publishedAt: string;
     url: string;
     image_url?: string;
 }
@@ -214,7 +214,7 @@ const Hero = () => {
                                                             {article.category}
                                                         </span>
                                                         <span className="text-xs text-neutral-500">
-                                                            {new Date(article.published_at).toLocaleDateString()}
+                                                            {new Date(article.publishedAt).toLocaleDateString()}
                                                         </span>
                                                     </div>
                                                     <h3 className="text-white font-semibold mb-2 line-clamp-2">{article.title}</h3>
