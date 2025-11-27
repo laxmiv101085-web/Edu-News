@@ -4,22 +4,26 @@ import { Article } from './types';
 import { cacheSet, cacheGet } from '../redis';
 import { db } from '../db';
 
-// Define sources focused ONLY on JEE, NEET & 10th/12th Board Exams
+// Define sources focused on JEE, NEET, UPSC, SSC, Government Exams, Jobs & Board Exams
 const sources = [
-    // Major Indian Education News (filtered for JEE/NEET/Board content)
-    new RSSProvider('Hindustan Times Education', 'https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml', 'exams'),
+    // Major Indian Education News Portals
+    new RSSProvider('Hindustan Times Education', 'https://www.hindustantimes.com/feeds/rss/education/rssfeed.xml', 'general'),
     new RSSProvider('Times of India Education', 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', 'exams'),
-    new RSSProvider('Indian Express Education', 'https://indianexpress.com/section/education/feed/', 'exams'),
-    new RSSProvider('NDTV Education', 'https://feeds.feedburner.com/ndtvnews-education', 'exams'),
+    new RSSProvider('Indian Express Education', 'https://indianexpress.com/section/education/feed/', 'general'),
+    new RSSProvider('NDTV Education', 'https://feeds.feedburner.com/ndtvnews-education', 'general'),
 
-    // JEE & NEET Entrance Exams
-    new RSSProvider('CareerIndia - Entrance Exams', 'https://www.careerindia.com/rss/entrance-exams.xml', 'exams'),
-    new RSSProvider('Jagran Josh - Exams', 'https://www.jagranjosh.com/rss/articles.xml', 'exams'),
+    // Exam-specific sources
+    new RSSProvider('CareerIndia', 'https://www.careerindia.com/rss/entrance-exams.xml', 'exams'),
+    new RSSProvider('Jagran Josh', 'https://www.jagranjosh.com/rss/articles.xml', 'exams'),
 
-    // 10th & 12th Board Exams (CBSE, State Boards)
-    new RSSProvider('CBSE Board Updates', 'https://www.cbse.gov.in/newsite/rss-feed.xml', 'results'),
+    // Jobs & Government Exams
+    new RSSProvider('Sarkari Result', 'https://www.sarkariresult.com/latestjob.xml', 'results'),
+    new RSSProvider('Employment News', 'https://employmentnews.gov.in/NewEmp/RSS/Vacancies.xml', 'general'),
 
-    // Add NewsAPI if key exists (for additional JEE/NEET/Board coverage)
+    // Board Exams & Results
+    new RSSProvider('CBSE Updates', 'https://www.cbse.gov.in/newsite/rss-feed.xml', 'results'),
+
+    // Add NewsAPI if key exists (for additional coverage)
     ...(process.env.NEWSAPI_KEY ? [new NewsAPIProvider(process.env.NEWSAPI_KEY)] : []),
 ];
 
