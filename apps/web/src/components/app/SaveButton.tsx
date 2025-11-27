@@ -20,18 +20,17 @@ const SaveButton = ({ articleId }: SaveButtonProps) => {
 
     return (
         <motion.button
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.9 }}
             onClick={handleToggle}
             className={clsx(
-                'px-3 py-1.5 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10 flex items-center gap-1.5 text-xs font-medium',
+                'p-2 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10',
                 saved
                     ? 'bg-accent-yellow/20 text-accent-yellow border-accent-yellow/30'
                     : 'bg-bg-dark/50 text-neutral-400 hover:bg-white/10 hover:text-white'
             )}
             title={saved ? "Remove from bookmarks" : "Save to bookmarks"}
         >
-            <Bookmark className={clsx('w-3.5 h-3.5', saved && 'fill-current')} />
-            <span>{saved ? 'Saved' : 'Save'}</span>
+            <Bookmark className={clsx('w-5 h-5', saved && 'fill-current')} />
         </motion.button>
     );
 };
