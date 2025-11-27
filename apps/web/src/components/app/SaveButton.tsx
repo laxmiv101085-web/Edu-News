@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useBookmarks } from '../../hooks/useBookmarks';
@@ -20,17 +20,18 @@ const SaveButton = ({ articleId }: SaveButtonProps) => {
 
     return (
         <motion.button
-            whileTap={{ scale: 0.8 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleToggle}
             className={clsx(
-                'p-2 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10',
+                'px-3 py-1.5 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10 flex items-center gap-1.5 text-xs font-medium',
                 saved
-                    ? 'bg-red-500/20 text-red-500 border-red-500/30'
+                    ? 'bg-accent-yellow/20 text-accent-yellow border-accent-yellow/30'
                     : 'bg-bg-dark/50 text-neutral-400 hover:bg-white/10 hover:text-white'
             )}
             title={saved ? "Remove from bookmarks" : "Save to bookmarks"}
         >
-            <Heart className={clsx('w-5 h-5', saved && 'fill-current')} />
+            <Bookmark className={clsx('w-3.5 h-3.5', saved && 'fill-current')} />
+            <span>{saved ? 'Saved' : 'Save'}</span>
         </motion.button>
     );
 };
