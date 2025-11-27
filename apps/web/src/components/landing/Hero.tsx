@@ -231,11 +231,22 @@ const Hero = () => {
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2 mb-2">
-                                                        <span className="px-2 py-1 rounded-md bg-accent-cyan/20 text-accent-cyan text-xs font-medium">
+                                                        <span className="px-2 py-1 rounded-md bg-accent-cyan/20 text-accent-cyan text-xs font-medium capitalize">
                                                             {article.category}
                                                         </span>
                                                         <span className="text-xs text-neutral-500">
-                                                            {new Date(article.publishedAt).toLocaleDateString()}
+                                                            {article.publishedAt
+                                                                ? new Date(article.publishedAt).toLocaleDateString('en-US', {
+                                                                    month: 'short',
+                                                                    day: 'numeric',
+                                                                    year: 'numeric'
+                                                                })
+                                                                : new Date().toLocaleDateString('en-US', {
+                                                                    month: 'short',
+                                                                    day: 'numeric',
+                                                                    year: 'numeric'
+                                                                })
+                                                            }
                                                         </span>
                                                     </div>
                                                     <h3 className="text-white font-semibold mb-2 line-clamp-2">{article.title}</h3>
